@@ -3,8 +3,8 @@ import java.util.ArrayList;
 
 public class Main {
 
-    /*
-    static Float[] multiplication(String[] a, String[] b,){
+
+    static Float[] multiplication(Float[] a, Float[] b,){
         int aRow = Integer.parseInt(a[0]);
         int aCol = Integer.parseInt(a[1]);
         int bRow = Integer.parseInt(b[0]);
@@ -14,11 +14,27 @@ public class Main {
         output[1] = (float) bCol;
 
         for (int i=0; i<aRow; i++ ){
-            int r
+            output[i+2] = a[i+2
 
         }
     }
-    */
+
+    static Float[][] createMatrix(Float[] a){
+        int aRow = Integer.parseInt(a[0]);
+        int aCol = Integer.parseInt(a[1]);
+        int counter= 2;
+        Float[][] matrix = new Float[aRow][aCol];
+        for (int i= 0; i<aRow; i++){
+            for(int j= 0; j<aCol; j++){
+                matrix[i][j]=a[counter];
+                counter++;
+            }
+        }
+        return matrix;
+
+
+    }
+
     public static void main(String[] args) {
         String[] aMatrixStr;
         String[] bMatrixStr;
