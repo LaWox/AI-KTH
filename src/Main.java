@@ -90,8 +90,5 @@ public class Main {
         for(float i:lastTransistion){
             System.out.println(i);
         }
-
-
-
     }
 }
