@@ -1,3 +1,5 @@
+// Jussi Kangas, jkangas@kth.se and Platon Woxler, platon@kth.se
+
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -87,8 +89,11 @@ public class Main {
         float[] firstTransition = multiplication(piMatrix, AMatrix);
         float[] lastTransistion = multiplication(createMatrix(firstTransition),BMatrix);
 
-        for(float i:lastTransistion){
-            System.out.println(i);
+        String output="";
+        output+= Integer.toString( (int) lastTransistion[0]) + " " + Integer.toString( (int) lastTransistion[1]);
+        for(int i=2;i<lastTransistion.length; i++){
+            output+=" " + lastTransistion[i];
         }
+        System.out.println(output);
     }
 }
