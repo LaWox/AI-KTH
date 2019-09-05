@@ -76,18 +76,24 @@ public class Main1 {
 
         for(int i = 0; i < aList.length; i ++){
             aList[i] = Float.parseFloat(aMatrixStr[i]);
+            System.out.println(aList[i]);
         }
         for(int i = 0; i < bList.length; i ++){
             bList[i] = Float.parseFloat(bMatrixStr[i]);
+            System.out.println(bList[i]);
         }
 
         for(int i = 0; i < pi.length; i ++){
             pi[i] = Float.parseFloat(piStr[i]);
+            System.out.println(pi[i]);
         }
 
         for(int i=1; i<emiStr.length; i++){
             emiSeq[i]=Integer.parseInt(emiStr[i])
+            System.out.println(emiSeq[i]);
         }
+
+
 
     }
 }
