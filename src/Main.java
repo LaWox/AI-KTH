@@ -61,7 +61,7 @@ public class Main {
 
 
         Scanner sc = new Scanner(System.in);
-        System.out.println("Printing the file passed in:");
+        //System.out.println("Printing the file passed in:");
 
         aMatrixStr = sc.nextLine().split(" ");
         bMatrixStr = sc.nextLine().split(" ");
