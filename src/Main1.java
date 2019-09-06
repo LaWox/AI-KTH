@@ -28,9 +28,20 @@ public class Main1 {
         return output;
     }
 
+    static float[][] elementMultiplication(float[] a, float[] b){
+        // elementwive multiplication
+        float [][] outMatrix = new float[1][a.length];
+
+        for (int i = 0; i < a.length; i++){
+            outMatrix[1][i] = a[i]*b[i];
+        }
+        return outMatrix;
+    }
+
     static float[][] createMatrix(float[] a){
         int aRow = (int) a[0];
         int aCol = (int) a[1];
+        System.out.println(aRow + " : " + aCol);
         int counter= 2;
         float[][] matrix = new float[aRow][aCol];
         for (int i= 0; i<aRow; i++){
@@ -40,10 +51,35 @@ public class Main1 {
             }
         }
         return matrix;
-
-
     }
 
+    // returns specific col from a matrix
+    static float[][] getCol(float[][] m, int index){
+        float [][] outCol = new float[1][m.length];
+        for(int i = 0; i < m.length; i++){
+            outCol[0][i] = m[i][index];
+        }
+
+        return outCol;
+    }
+
+    // the alphapassalgorithm
+    static float[][] alphaPass(float[][] pi, float[][] a, float[][] b, int[] emission){
+        float[] stateProb;
+        float[][] col;
+
+        //System.out.println(getCol(b, emission[0]).length);
+
+        col = getCol(b, emission[0]);
+        float[][] alpha = elementMultiplication(pi[0], col[0]);
+
+        for(int i = 0; i < emission.length; i++){
+            col = getCol(b, emission[i+1]);
+            stateProb = multiplication(alpha, a);
+            alpha = elementMultiplication(stateProb, col[0]);
+        }
+        return alpha;
+    }
 
     public static void main(String[] arg){
 
@@ -60,9 +96,7 @@ public class Main1 {
         float[][] piMatrix;
         int[] emiSeq;
 
-
         Scanner sc = new Scanner(System.in);
-        //System.out.println("Printing the file passed in:");
 
         aMatrixStr = sc.nextLine().split(" ");
         bMatrixStr = sc.nextLine().split(" ");
@@ -93,7 +127,14 @@ public class Main1 {
             //System.out.println(emiSeq[i]);
         }
 
+        // creta matrixes
+        AMatrix = createMatrix(aList);
+        BMatrix = createMatrix(bList);
+        piMatrix = createMatrix(pi);
 
+        //System.out.println(AMatrix.length + " " + BMatrix.length + " " + piMatrix.length);
 
+        float[][] ans = alphaPass(piMatrix, AMatrix, BMatrix, emiSeq);
+        System.out.println(ans);
     }
 }
