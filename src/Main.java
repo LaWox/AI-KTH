@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Main {
 
-
+    // matrix multiplicatipon
     static float[] multiplication(float[][] a, float[][] b){
         int aRow = a.length;
         int aCol = a[0].length;
@@ -27,10 +27,10 @@ public class Main {
                 counter++;
             }
         }
-
         return output;
     }
 
+    // converts from 1d to 2d
     static float[][] createMatrix(float[] a){
         int aRow = (int) a[0];
         int aCol = (int) a[1];
@@ -43,8 +43,6 @@ public class Main {
             }
         }
         return matrix;
-
-
     }
 
     public static void main(String[] args) {
@@ -71,6 +69,7 @@ public class Main {
         bList = new float[bMatrixStr.length];
         pi = new float[piStr.length];
 
+        // takes input and conerts to floats
         for(int i = 0; i < aList.length; i ++){
             aList[i] = Float.parseFloat(aMatrixStr[i]);
         }
@@ -82,13 +81,18 @@ public class Main {
             pi[i] = Float.parseFloat(piStr[i]);
         }
 
+        // makes matrixes fromn the input
         AMatrix=createMatrix(aList);
         BMatrix=createMatrix(bList);
         piMatrix=createMatrix(pi);
 
+
+        // some computations
         float[] firstTransition = multiplication(piMatrix, AMatrix);
         float[] lastTransistion = multiplication(createMatrix(firstTransition),BMatrix);
 
+
+        // create final output as string array
         String output="";
         output+= Integer.toString( (int) lastTransistion[0]) + " " + Integer.toString( (int) lastTransistion[1]);
         for(int i=2;i<lastTransistion.length; i++){
