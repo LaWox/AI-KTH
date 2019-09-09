@@ -33,7 +33,8 @@ public class Main1 {
         float [][] outMatrix = new float[1][a.length];
 
         for (int i = 0; i < a.length; i++){
-            outMatrix[1][i] = a[i]*b[i];
+            //System.out.println(a.length + " : " + i);
+            outMatrix[0][i] = a[i]*b[i];
         }
         return outMatrix;
     }
@@ -71,6 +72,7 @@ public class Main1 {
         //System.out.println(getCol(b, emission[0]).length);
 
         col = getCol(b, emission[0]);
+        System.out.println(pi[0].length);
         float[][] alpha = elementMultiplication(pi[0], col[0]);
 
         for(int i = 0; i < emission.length; i++){
