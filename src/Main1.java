@@ -1,18 +1,20 @@
+// Platon Woxler platon@kth, Jussi Kangas jkangas@kth.se
+
 import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Main1 {
 
-    static float[] multiplication(float[][] a, float[][] b){
+    static double[] multiplication(double[][] a, double[][] b){
         int aRow = a.length;
         int aCol = a[0].length;
         int bRow = b.length;
         int bCol = b[0].length;
-        float[] output = new float[aRow*bCol+2];
-        output[0] = (float) aRow;
-        output[1] = (float) bCol;
+        double[] output = new double[aRow*bCol+2];
+        output[0] = (double) aRow;
+        output[1] = (double) bCol;
         int counter=2;
-        float sum=0;
+        double sum=0;
 
         for (int i=0; i<aRow; i++ ){
             for( int j=0; j<bCol; j++){
@@ -28,23 +30,25 @@ public class Main1 {
         return output;
     }
 
-    static float[][] elementMultiplication(float[] a, float[] b){
+    static double[][] elementMultiplication(double[] a, double[] b){
         // elementwive multiplication
-        float [][] outMatrix = new float[1][a.length];
+        double[][] outMatrix = new double[1][a.length];
 
         for (int i = 0; i < a.length; i++){
             //System.out.println(a.length + " : " + i);
             outMatrix[0][i] = a[i]*b[i];
+            //System.out.println(outMatrix[0][i]);
         }
+        //System.out.println("--------------------------------");
         return outMatrix;
     }
 
-    static float[][] createMatrix(float[] a){
+    static double[][] createMatrix(double[] a){
         int aRow = (int) a[0];
         int aCol = (int) a[1];
-        System.out.println(aRow + " : " + aCol);
+        //System.out.println(aRow + " : " + aCol);
         int counter= 2;
-        float[][] matrix = new float[aRow][aCol];
+        double[][] matrix = new double[aRow][aCol];
         for (int i= 0; i<aRow; i++){
             for(int j= 0; j<aCol; j++){
                 matrix[i][j]=a[counter];
@@ -55,8 +59,8 @@ public class Main1 {
     }
 
     // returns specific col from a matrix
-    static float[][] getCol(float[][] m, int index){
-        float [][] outCol = new float[1][m.length];
+    static double[][] getCol(double[][] m, int index){
+        double[][] outCol = new double[1][m.length];
         for(int i = 0; i < m.length; i++){
             outCol[0][i] = m[i][index];
         }
@@ -64,21 +68,32 @@ public class Main1 {
         return outCol;
     }
 
+    static double sumMatrix(double[][] matrix){
+        double sum = 0;
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = 0; j < matrix[0].length; j++){
+                sum += matrix[i][j];
+                //System.out.println(sum);
+            }
+        }
+        return sum;
+    }
+
     // the alphapassalgorithm
-    static float[][] alphaPass(float[][] pi, float[][] a, float[][] b, int[] emission){
-        float[] stateProb;
-        float[][] col;
+    static double[][] alphaPass(double[][] pi, double[][] a, double[][] b, int[] emission){
+        double[][] stateProb;
+        double[][] col;
 
         //System.out.println(getCol(b, emission[0]).length);
 
         col = getCol(b, emission[0]);
-        System.out.println(pi[0].length);
-        float[][] alpha = elementMultiplication(pi[0], col[0]);
+        //System.out.println(pi[0].length);
+        double[][] alpha = elementMultiplication(pi[0], col[0]);
 
-        for(int i = 0; i < emission.length; i++){
+        for(int i = 0; i < emission.length-1; i++){
             col = getCol(b, emission[i+1]);
-            stateProb = multiplication(alpha, a);
-            alpha = elementMultiplication(stateProb, col[0]);
+            stateProb = createMatrix(multiplication(alpha, a));
+            alpha = elementMultiplication(stateProb[0], col[0]);
         }
         return alpha;
     }
@@ -90,12 +105,12 @@ public class Main1 {
         String[] piStr;
         String[] emiStr;
 
-        float[] aList;
-        float[] bList;
-        float[] pi;
-        float[][] AMatrix;
-        float[][] BMatrix;
-        float[][] piMatrix;
+        double[] aList;
+        double[] bList;
+        double[] pi;
+        double[][] AMatrix;
+        double[][] BMatrix;
+        double[][] piMatrix;
         int[] emiSeq;
 
         Scanner sc = new Scanner(System.in);
@@ -105,22 +120,22 @@ public class Main1 {
         piStr = sc.nextLine().split(" ");
         emiStr = sc.nextLine().split(" ");
 
-        aList = new float[aMatrixStr.length];
-        bList = new float[bMatrixStr.length];
-        pi = new float[piStr.length];
+        aList = new double[aMatrixStr.length];
+        bList = new double[bMatrixStr.length];
+        pi = new double[piStr.length];
         emiSeq = new int[Integer.parseInt(emiStr[0])];
 
         for(int i = 0; i < aList.length; i ++){
-            aList[i] = Float.parseFloat(aMatrixStr[i]);
+            aList[i] = Double.parseDouble(aMatrixStr[i]);
             //System.out.println(aList[i]);
         }
         for(int i = 0; i < bList.length; i ++){
-            bList[i] = Float.parseFloat(bMatrixStr[i]);
+            bList[i] = Double.parseDouble(bMatrixStr[i]);
             //System.out.println(bList[i]);
         }
 
         for(int i = 0; i < pi.length; i ++){
-            pi[i] = Float.parseFloat(piStr[i]);
+            pi[i] = Double.parseDouble(piStr[i]);
             //System.out.println(pi[i]);
         }
 
@@ -136,7 +151,7 @@ public class Main1 {
 
         //System.out.println(AMatrix.length + " " + BMatrix.length + " " + piMatrix.length);
 
-        float[][] ans = alphaPass(piMatrix, AMatrix, BMatrix, emiSeq);
-        System.out.println(ans);
+        double[][] ans = alphaPass(piMatrix, AMatrix, BMatrix, emiSeq);
+        System.out.println(sumMatrix(ans));
     }
 }
