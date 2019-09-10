@@ -8,25 +8,11 @@ public class Main2 {
     static double[] multiplication(double[][] a, double[][] b){
         int aRow = a.length;
         int aCol = a[0].length;
-        int bRow = b.length;
-        int bCol = b[0].length;
-        double[] output = new double[aRow*bCol];
-        int counter=2;
-        double prob=0;
+        double[][] output = new double[aRow][aCol];
 
         for (int i=0; i<aRow; i++ ){
-            for( int j=0; j<bCol; j++){
-                for( int k=0; k<aCol; k++){
-                    if (prob < a[i][k]*b[k][j]){
-                        prob = a[i][k]*b[k][j];
-                        states.set(Integer.toString(k));
-                    }
-
-
-                }
-                output[counter]=prob;
-                prob=0;
-                counter++;
+            for( int j=0; j<aCol; j++){
+                output[i][k] = a[i][j]*b[0][j];
             }
         }
 
@@ -70,11 +56,29 @@ public class Main2 {
         return outCol;
     }
 
+    static int[] getStates(double[][] delta){
+        int[] states = new int[delta.length];
+        double max = 0;
+        for(int i = 0; i < delta.length; i++){
+            for(int j = 0; j < delta[0].length; j++){
+                if(delta[i][j] > max){
+                    states[i] = j;
+                }
+            }
+            max = 0;
+        }
+        return states;
+    }
+
+    static double[][] getDelta(double[][] a, float[][] prevDelta){
+
+    }
+
     static int[][] viterbi(double[][] a, double[][] b, double[][] pi, int[][] emissions ){
         double[][] delta = new double[emissions.length][a.length];
         double [0] delta = (elementMultiplication(getCol(b,emissions[0]), pi))[0];
         double [][] deltam = new double[1][a.length];
-        for (int i=0; i<emissions.length-1, i++ ){
+        for (int i=0; i < emissions.length-1; i++ ){
             deltam[0]=delta[i];
             double [] deltaTemp = multiplication(deltam, a);
             deltaTemp = elementMultiplication(deltaTemp[0],getCol(b, emissions[i+1]));
