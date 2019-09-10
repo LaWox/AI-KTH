@@ -3,16 +3,15 @@ import java.util.ArrayList;
 
 public class Main2 {
 
-    static ArrayList[] <String> states;
 
-    static double[] multiplication(double[][] a, double[][] b){
+    static double[][] multiplication(double[][] a, double[] b){
         int aRow = a.length;
         int aCol = a[0].length;
         double[][] output = new double[aRow][aCol];
 
         for (int i=0; i<aRow; i++ ){
             for( int j=0; j<aCol; j++){
-                output[i][k] = a[i][j]*b[0][j];
+                output[i][j] = a[i][j]*b[j];
             }
         }
 
@@ -70,21 +69,41 @@ public class Main2 {
         return states;
     }
 
-    static double[][] getDelta(double[][] a, float[][] prevDelta){
+    static double[] getMax(double[][] delta){
+        double maxProb [] = new double[delta.length];
+        double max = 0;
 
+        for(int i = 0; i < delta.length; i++){
+            for(int j = 0; j < delta[0].length; j++){
+                if(delta[i][j] > max){
+                    maxProb[i] = delta[i][j];
+                }
+            }
+            max = 0;
+        }
+        return maxProb;
     }
 
-    static int[][] viterbi(double[][] a, double[][] b, double[][] pi, int[][] emissions ){
+    static int[][] viterbi(double[][] a, double[][] b, double[] pi, int[] emissions ){
+        int[][] states= new int[a.length][emissions.length];
         double[][] delta = new double[emissions.length][a.length];
-        double [0] delta = (elementMultiplication(getCol(b,emissions[0]), pi))[0];
-        double [][] deltam = new double[1][a.length];
+        double [] observation = (getCol(b, emissions[0]))[0];
+
+        delta[0] = (elementMultiplication(observation, pi))[0];
+        double [][] deltaTemp;
+
         for (int i=0; i < emissions.length-1; i++ ){
-            deltam[0]=delta[i];
-            double [] deltaTemp = multiplication(deltam, a);
-            deltaTemp = elementMultiplication(deltaTemp[0],getCol(b, emissions[i+1]));
-            delta[i]=deltaTemp[0]
+
+            // A*delta
+            deltaTemp = multiplication(a, delta[i]);
+            // Find max state
+            states[i]=getStates(deltaTemp);
+            // Get new delta value
+            observation=(getCol(b, emissions[i+1]))[0];
+            delta[i]= (elementMultiplication(getMax(deltaTemp),observation))[0];
 
         }
+        return states;
     }
 
     public static void main(String[] args){
@@ -136,7 +155,7 @@ public class Main2 {
         AMatrix = createMatrix(aList);
         BMatrix = createMatrix(bList);
         piMatrix = createMatrix(pi);
-        states= new ArrayList<String>();
+
 
 
     }
