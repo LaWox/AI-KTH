@@ -76,11 +76,14 @@ public class Main2 {
         for(int i = 0; i < delta.length; i++){
             for(int j = 0; j < delta[0].length; j++){
                 if(delta[i][j] > max){
+                    max= delta[i][j];
                     maxProb[i] = delta[i][j];
                 }
             }
             max = 0;
+            System.out.println("Maxprob: "+maxProb[i]);
         }
+
         return maxProb;
     }
 
@@ -105,25 +108,39 @@ public class Main2 {
         delta[0] = (elementMultiplication(observation, pi))[0];
         double [][] deltaTemp;
 
+        printMatrix(delta);
+
         for (int i=0; i < emissions.length-1; i++ ){
 
             // A*delta
             deltaTemp = multiplication(a, delta[i]);
+
+            //printMatrix(deltaTemp);
+            //System.out.println("-----------");
             // Find max state
             statesMatrix[i]=getStates(deltaTemp);
 
             // Get new delta value
             observation=(getCol(b, emissions[i+1]))[0];
+            System.out.println("observation");
+            for(double p:observation){
+                System.out.print(p+" ");
+            }
 
-            delta[i]= (elementMultiplication(getMax(deltaTemp),observation))[0];
+            delta[i+1]= (elementMultiplication(getMax(deltaTemp),observation))[0];
             //System.out.println("inne i första for loopen");
+
+            System.out.println("delta");
+            printMatrix(delta);
+            //System.out.println("statesmatrix");
+            //printMatrix(statesMatrix);
         }
 
         double max=0;
         for(int i=delta.length-1; i>0; i--){
             for(int j=0; j<delta[0].length; j++){
-                System.out.println(statesMatrix[i][j] + " stateMatrix");
-                System.out.println(delta[i][j]);
+                //System.out.println(statesMatrix[i][j] + " stateMatrix");
+                //System.out.println(delta[i][j]);
                 if (delta[i][j]> max){
                     max=delta[i][j];
                     states[i-1]=statesMatrix[i][j];
@@ -135,6 +152,26 @@ public class Main2 {
         states[emissions.length-1]=getMaxIndx(delta[delta.length-1]);
 
         return states;
+    }
+
+    static void printMatrix(double[][] m){
+        for(int i = 0; i < m.length; i++){
+            for(int j = 0; j < m[0].length; j++){
+                System.out.print(m[i][j] + " ");
+            }
+            System.out.println(" ");
+        }
+
+    }
+
+    static void printMatrix(int[][] m){
+        for(int i = 0; i < m.length; i++){
+            for(int j = 0; j < m[0].length; j++){
+                System.out.print(m[i][j] + " ");
+            }
+            System.out.println(" ");
+        }
+
     }
 
     public static void main(String[] args){
