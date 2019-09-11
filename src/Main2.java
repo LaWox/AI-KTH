@@ -114,7 +114,7 @@ public class Main2 {
 
             // Get new delta value
             observation=(getCol(b, emissions[i+1]))[0];
-            
+
             delta[i]= (elementMultiplication(getMax(deltaTemp),observation))[0];
             //System.out.println("inne i första for loopen");
         }
