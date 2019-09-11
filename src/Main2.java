@@ -84,10 +84,23 @@ public class Main2 {
         return maxProb;
     }
 
-    static int[][] viterbi(double[][] a, double[][] b, double[] pi, int[] emissions ){
-        int[][] states= new int[a.length][emissions.length];
+    static int getMaxIndx(double[] list){
+        int indx=0;
+        double max=0;
+        for(int i=0; i<list.length; i++){
+            if (max<list[i]){
+                max=list[i];
+                indx=i;
+            }
+        }
+        return indx;
+    }
+
+    static int[] viterbi(double[][] a, double[][] b, double[] pi, int[] emissions ){
+        int[][] statesMatrix= new int[a.length][emissions.length];
         double[][] delta = new double[emissions.length][a.length];
         double [] observation = (getCol(b, emissions[0]))[0];
+        int[] states=new int[emissions.length];
 
         delta[0] = (elementMultiplication(observation, pi))[0];
         double [][] deltaTemp;
@@ -97,12 +110,30 @@ public class Main2 {
             // A*delta
             deltaTemp = multiplication(a, delta[i]);
             // Find max state
-            states[i]=getStates(deltaTemp);
+            statesMatrix[i]=getStates(deltaTemp);
+
             // Get new delta value
             observation=(getCol(b, emissions[i+1]))[0];
+            
             delta[i]= (elementMultiplication(getMax(deltaTemp),observation))[0];
-
+            //System.out.println("inne i första for loopen");
         }
+
+        double max=0;
+        for(int i=delta.length-1; i>0; i--){
+            for(int j=0; j<delta[0].length; j++){
+                System.out.println(statesMatrix[i][j] + " stateMatrix");
+                System.out.println(delta[i][j]);
+                if (delta[i][j]> max){
+                    max=delta[i][j];
+                    states[i-1]=statesMatrix[i][j];
+                }
+            }
+            max=0;
+            //System.out.println("inne i andra for loopen");
+        }
+        states[emissions.length-1]=getMaxIndx(delta[delta.length-1]);
+
         return states;
     }
 
@@ -155,6 +186,12 @@ public class Main2 {
         AMatrix = createMatrix(aList);
         BMatrix = createMatrix(bList);
         piMatrix = createMatrix(pi);
+
+        int[] states = viterbi(AMatrix, BMatrix, piMatrix[0], emiSeq);
+        for(int i: states){
+            System.out.println(i);
+        }
+
 
 
 
