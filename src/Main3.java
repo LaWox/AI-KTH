@@ -16,6 +16,30 @@ public class Main3 {
         return output;
     }
 
+    static double[] matrixMultiplication(double[][] a, double[][] b){
+        int aRow = a.length;
+        int aCol = a[0].length;
+        int bRow = b.length;
+        int bCol = b[0].length;
+        double[] output = new double[aRow*bCol+2];
+        output[0] = (double) aRow;
+        output[1] = (double) bCol;
+        int counter=2;
+        double sum=0;
+
+        for (int i=0; i<aRow; i++ ){
+            for( int j=0; j<bCol; j++){
+                for( int k=0; k<aCol; k++){
+                    sum += a[i][k]*b[k][j];
+                }
+                output[counter]=sum;
+                sum=0;
+                counter++;
+            }
+        }
+        return output;
+    }
+
     static double[][] elementMultiplication(double[] a, double[] b){
         // elementwive multiplication
         double[][] outMatrix = new double[1][a.length];
@@ -96,42 +120,6 @@ public class Main3 {
         return indx;
     }
 
-    static int[] viterbi(double[][] a, double[][] b, double[] pi, int[] emissions ){
-        int[][] statesMatrix= new int[emissions.length][a.length];
-        double[][] delta = new double[emissions.length][a.length];
-        double [] observation = (getCol(b, emissions[0]))[0];
-        int[] states=new int[emissions.length];
-
-        delta[0] = (elementMultiplication(observation, pi))[0];
-        double [][] deltaTemp;
-
-        for (int i=0; i < emissions.length-1; i++ ){
-            // Get new delta value
-            observation=(getCol(b, emissions[i+1]))[0];
-            // A*delta*observations
-            deltaTemp = multiplication(a, delta[i], observation);
-
-            // Find max state
-            statesMatrix[i]=getStates(deltaTemp);
-
-            delta[i+1]= getMax(deltaTemp);
-        }
-
-        // Get correct states
-        double max=0;
-        for(int i=emissions.length-1; i>0; i--){
-            for(int j=0; j<delta[0].length; j++){
-                if (delta[i][j]> max){
-                    max=delta[i][j];
-                    states[i-1]=statesMatrix[i-1][j];
-                }
-            }
-            max=0;
-        }
-        states[emissions.length-1]=getMaxIndx(delta[delta.length-1]);
-        return states;
-    }
-
     static void printMatrix(double[][] m){
         for(int i = 0; i < m.length; i++){
             for(int j = 0; j < m[0].length; j++){
@@ -149,6 +137,40 @@ public class Main3 {
             System.out.println(" ");
         }
 
+    }
+
+    // the alphapassalgorithm
+    static double[][] alphaPass(double[][] pi, double[][] a, double[][] b, int[] emission){
+        double[][] stateProb;
+        double[][] col;
+
+        col = getCol(b, emission[0]);
+        double[][] alpha = elementMultiplication(pi[0], col[0]);
+
+        for(int i = 0; i < emission.length-1; i++){
+            col = getCol(b, emission[i+1]);
+            stateProb = createMatrix(multiplication(alpha, a));
+            alpha = elementMultiplication(stateProb[0], col[0]);
+        }
+        return alpha;
+    }
+
+    // beta pass
+    static double[][] betaPass(double[][] pi, double[][] a, double[][] b, int[] emission){
+        double[][] beta  = new double[][];
+        return beta;
+    }
+
+    // di-gamma function
+    static double[][] diGamma(double[][] alpha, double[][] beta){
+        double[][] diGamma = new double[][];
+        return diGamma;
+    }
+
+    // gamma function
+    static double[] gamma(double[][] alpha, double[][] beta){
+        double[] gamma = new double[];
+        return gamma;
     }
 
     public static void main(String[] args){
