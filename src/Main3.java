@@ -1,8 +1,7 @@
 //Platon Woxler platon@kth.se and Jussi Kangas jkangas@kth.se
 import java.util.Scanner;
 
-public class Main2 {
-
+public class Main3 {
 
     static double[][] multiplication(double[][] a, double[] b, double[] o){
         int aRow = a.length;
@@ -14,7 +13,6 @@ public class Main2 {
                 output[i][j] = a[j][i]*b[j]*o[i];
             }
         }
-
         return output;
     }
 
