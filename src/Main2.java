@@ -1,17 +1,19 @@
+//Platon Woxler platon@kth.se and Jussi Kangas jkangas@kth.se
 import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Main2 {
 
 
-    static double[][] multiplication(double[][] a, double[] b){
+    static double[][] multiplication(double[][] a, double[] b, double[] o){
         int aRow = a.length;
         int aCol = a[0].length;
         double[][] output = new double[aRow][aCol];
 
         for (int i=0; i<aRow; i++ ){
             for( int j=0; j<aCol; j++){
-                output[i][j] = a[i][j]*b[j];
+                //System.out.println(a[j][i]+" * "+ b[j] +" multiplication");
+                output[i][j] = a[j][i]*b[j]*o[i];
             }
         }
 
@@ -58,11 +60,16 @@ public class Main2 {
     static int[] getStates(double[][] delta){
         int[] states = new int[delta.length];
         double max = 0;
+        //printMatrix(delta);
         for(int i = 0; i < delta.length; i++){
             for(int j = 0; j < delta[0].length; j++){
                 if(delta[i][j] > max){
                     states[i] = j;
+                    max=delta[i][j];
                 }
+            }
+            if(max==0){
+                states[i]=-1;
             }
             max = 0;
         }
@@ -81,7 +88,7 @@ public class Main2 {
                 }
             }
             max = 0;
-            System.out.println("Maxprob: "+maxProb[i]);
+            //System.out.println("Maxprob: "+maxProb[i]);
         }
 
         return maxProb;
@@ -108,34 +115,36 @@ public class Main2 {
         delta[0] = (elementMultiplication(observation, pi))[0];
         double [][] deltaTemp;
 
-        printMatrix(delta);
+        //printMatrix(delta);
 
         for (int i=0; i < emissions.length-1; i++ ){
 
-            // A*delta
-            deltaTemp = multiplication(a, delta[i]);
+            // Get new delta value
+            observation=(getCol(b, emissions[i+1]))[0];
+            // A*delta*observations
+            deltaTemp = multiplication(a, delta[i], observation);
 
             //printMatrix(deltaTemp);
             //System.out.println("-----------");
             // Find max state
             statesMatrix[i]=getStates(deltaTemp);
 
-            // Get new delta value
-            observation=(getCol(b, emissions[i+1]))[0];
-            System.out.println("observation");
-            for(double p:observation){
-                System.out.print(p+" ");
-            }
 
-            delta[i+1]= (elementMultiplication(getMax(deltaTemp),observation))[0];
+            //System.out.println("observation");
+           // for(double p:observation){
+           //     System.out.print(p+" ");
+           // }
+
+            delta[i+1]= getMax(deltaTemp);
             //System.out.println("inne i första for loopen");
 
-            System.out.println("delta");
-            printMatrix(delta);
+            //System.out.println("delta");
+            //printMatrix(delta);
             //System.out.println("statesmatrix");
             //printMatrix(statesMatrix);
         }
 
+        // Get correct states
         double max=0;
         for(int i=delta.length-1; i>0; i--){
             for(int j=0; j<delta[0].length; j++){
@@ -143,7 +152,7 @@ public class Main2 {
                 //System.out.println(delta[i][j]);
                 if (delta[i][j]> max){
                     max=delta[i][j];
-                    states[i-1]=statesMatrix[i][j];
+                    states[i-1]=statesMatrix[i-1][j];
                 }
             }
             max=0;
@@ -226,7 +235,7 @@ public class Main2 {
 
         int[] states = viterbi(AMatrix, BMatrix, piMatrix[0], emiSeq);
         for(int i: states){
-            System.out.println(i);
+            System.out.print(i+" ");
         }
 
 
