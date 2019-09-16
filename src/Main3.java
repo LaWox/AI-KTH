@@ -3,6 +3,20 @@ import java.util.Scanner;
 
 public class Main3 {
 
+    static double[][] transpose(double[][] m){
+        int row = m.length;
+        int col = m[0].length;
+
+        double[][] transpM = new double[col][row];
+
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
+                transpM[j][i] = m[i][j];
+            }
+        }
+        return transpM;
+    }
+
     static double[][] multiplication(double[][] a, double[] b, double[] o){
         int aRow = a.length;
         int aCol = a[0].length;
@@ -64,12 +78,21 @@ public class Main3 {
         return matrix;
     }
 
+
+    // retrieve a standing col
+    static double[][] getColStanding(double[][] m, int index){
+        double[][] outCol = new double[1][m.length];
+        for(int i = 0; i < m.length; i++){
+            outCol[i][0] = m[i][index];
+        }
+        return outCol;
+    }
+
     static double[][] getCol(double[][] m, int index){
         double[][] outCol = new double[1][m.length];
         for(int i = 0; i < m.length; i++){
             outCol[0][i] = m[i][index];
         }
-
         return outCol;
     }
 
@@ -104,7 +127,6 @@ public class Main3 {
             }
             max = 0;
         }
-
         return maxProb;
     }
 
@@ -136,42 +158,84 @@ public class Main3 {
             }
             System.out.println(" ");
         }
-
     }
 
-    // the alphapassalgorithm
+    // the alphapass algorithm
+    // TODO: we want the whole matrix in hmm3
     static double[][] alphaPass(double[][] pi, double[][] a, double[][] b, int[] emission){
         double[][] stateProb;
         double[][] col;
+        double[][] alphaM = new double[emission.length][a.length];
+        double[][] alphaTemp = new double[1][emission.length];
 
         col = getCol(b, emission[0]);
-        double[][] alpha = elementMultiplication(pi[0], col[0]);
+        alphaM[0] = (elementMultiplication(pi[0], col[0]))[0];
 
         for(int i = 0; i < emission.length-1; i++){
             col = getCol(b, emission[i+1]);
-            stateProb = createMatrix(multiplication(alpha, a));
-            alpha = elementMultiplication(stateProb[0], col[0]);
+            alphaTemp[0] = alphaM[i];
+            stateProb = createMatrix(matrixMultiplication(alphaTemp, a));
+            alphaM[i+1] = (elementMultiplication(stateProb[0], col[0]))[0];
         }
-        return alpha;
+        return alphaM;
     }
 
     // beta pass
     static double[][] betaPass(double[][] pi, double[][] a, double[][] b, int[] emission){
-        double[][] beta  = new double[][];
+        double[] stateProb;
+        double[][] beta = new double[emission.length][a.length];
+        double[][] betaTemp;
+
+        double[] bCol;
+
+        // last col of beta set to 1's
+        for(int col = 0; col < beta.length; col++){
+            beta[beta.length-1][col] = 1;
+        }
+
+        for(int i = emission.length; i < 0; i--){
+            bCol = (getCol(b, emission[i-1]))[0];
+
+            betaTemp = (elementMultiplication(bCol, (getCol(beta,i-1))[0]));
+
+            // the multiplication is reversed form  alphaPass?
+            stateProb = matrixMultiplication(a, transpose(betaTemp));
+
+            beta[i-2] = stateProb;
+        }
         return beta;
     }
 
     // di-gamma function
-    static double[][] diGamma(double[][] alpha, double[][] beta){
-        double[][] diGamma = new double[][];
+    static double[][][] diGamma(double[][] alpha, double[][] beta, int[] emissions, double[][] a, double[][] b){
+        double[][][] diGamma = new double[a.length][a[0].length][emissions.length];
+        double[][] gamma = new double[a.length][emissions.length];
+        int T = emissions.length;
+        double denom = 0;
+        int sum = 0;
+
+        for(int i = 0; i < a.length; i++){
+            sum += alpha[alpha.length-1][i];
+        }
+        for(int t = 0; t < T-2; t++){
+            denom = 0;
+            for(int i = 0; i < a.length-1; i++){
+                for(int j = 0; j < a.length -1; j++){
+                    denom += alpha[i][t]*a[i][j]*b[j][emissions[t+1]]*beta[j][t];
+                }
+            }
+            for(int i = 0; i < a.length-1; i++){
+                for(int j = 0; j < a.length-1; j++){
+                    diGamma[i][j][t] = (alpha[i][t]*a[i][j]*b[j][emissions[t+1]])/denom;
+                    gamma[i][t] += diGamma[i][j][t];
+                }
+            }
+        }
+
         return diGamma;
     }
 
     // gamma function
-    static double[] gamma(double[][] alpha, double[][] beta){
-        double[] gamma = new double[];
-        return gamma;
-    }
 
     public static void main(String[] args){
         String[] aMatrixStr;
@@ -222,12 +286,6 @@ public class Main3 {
         AMatrix = createMatrix(aList);
         BMatrix = createMatrix(bList);
         piMatrix = createMatrix(pi);
-
-        int[] states = viterbi(AMatrix, BMatrix, piMatrix[0], emiSeq);
-        for(int i: states){
-            System.out.print(i+" ");
-        }
-        System.out.println();
 
     }
 }

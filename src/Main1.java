@@ -81,7 +81,6 @@ public class Main1 {
         for(int i = 0; i < matrix.length; i++){
             for(int j = 0; j < matrix[0].length; j++){
                 sum += matrix[i][j];
-                //System.out.println(sum);
             }
         }
         return sum;
