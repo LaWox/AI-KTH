@@ -216,18 +216,18 @@ public class Main3 {
         int sum = 0;
 
         for(int i = 0; i < a.length; i++){
-            sum += alpha[alpha.length-1][i];
+            sum += alpha[i][alpha.length-1];
         }
         for(int t = 0; t < T-1; t++){
             denom = 0;
             for(int i = 0; i < a.length; i++){
                 for(int j = 0; j < a.length; j++){
-                    denom += alpha[t][i]*a[i][j]*b[j][emissions[t+1]]*beta[t][j];
+                    denom += alpha[i][t]*a[i][j]*b[j][emissions[t+1]]*beta[j][t];
                 }
             }
             for(int i = 0; i < a.length; i++){
                 for(int j = 0; j < a.length; j++){
-                    diGamma[i][j][t] = (alpha[t][i]*a[i][j]*b[j][emissions[t+1]])/denom;
+                    diGamma[i][j][t] = (alpha[i][t]*a[i][j]*b[j][emissions[t+1]])/denom;
                     //gamma[i][t] += diGamma[i][j][t];
                 }
             }
@@ -251,7 +251,7 @@ public class Main3 {
 
         }
         for( int k=0; k<diGamma.length; k++){
-            gamma[k][gamma.length-1] = alpha[alpha.length-1][k];
+            gamma[k][gamma.length-1] = alpha[k][alpha.length-1];
         }
         return gamma;
     }
@@ -300,11 +300,19 @@ public class Main3 {
         }
     }
 
-    static void alphaP2(double[][] A, double[][] alpha, double[][] B, int[] emis, double[] c ){
+    static void alphaP2(double[][] A, double[][] alpha, double[][] B, int[] emis, double[] c, double[][] pi ){
         double[][] observation;
+        c[0]=0;
+        observation = getCol(B, emis[0]);
+
+        for(int i= 0; i<A.length; i++){
+            alpha[i][0] = pi[0][i]*observation[0][i];
+            c[0]+= alpha[i][0];
+        }
+
         for(int t=1; t < emis.length; t++) {
             c[t] = 0;
-            observation = getCol(b, emis[t])
+            observation = getCol(B, emis[t]);
             for (int i = 0; i < A.length; i++) {
                 alpha[i][t] = 0;
                 for (int j = 0; j < A.length; j++) {
@@ -313,10 +321,29 @@ public class Main3 {
                 alpha[i][t] *= observation[0][i];
                 c[t] += alpha[i][t];
             }
-
-            c[t] /= c[t];
+            //System.out.println(c[t]);
+            //System.out.println(1/c[t]);
+            c[t] = 1/c[t];
             for (int k = 0; k < A.length; k++) {
-                alpha[i][t] *= c[t];
+                alpha[k][t] *= c[t];
+            }
+        }
+    }
+
+    static void betaPass2(double[][] A, double[][] B, double[][] beta, double[] scaling, int[] emis){
+        // ini last col of beta
+        for(int i = 0; i < A.length; i++){
+            beta[i][beta[0].length-1] = scaling[scaling.length-1];
+        }
+        // init beta
+        for(int t = beta[0].length - 2; t > 0; t--) {
+            for(int i = 0; i < A.length; i++){
+                beta[i][t] = 0;
+                for(int j = 0; j < A.length; j++){
+                    beta[i][t] += A[i][j]*B[i][emis[t+1]]*beta[j][t];
+                }
+                // scale beta
+                beta[i][t] *= scaling[t];
             }
         }
     }
@@ -374,15 +401,19 @@ public class Main3 {
 
 
         // alpha, beta, gamma and di-gamma
-        double[][] alphaM;
-        double[][] betaM;
+        double[][] alphaM = new double[AMatrix.length][emiSeq.length];
+        double[][] betaM = new double[AMatrix.length][emiSeq.length];
         double[][][] diGammaM;
         double[][] gamma;
+        double[] c = new double[emiSeq.length];
 
-        for(int i=0; i< 50; i++) {
+        for(int i=0; i< 1; i++) {
+            //printMatrix(AMatrix);
 
-            alphaM = alphaPass(piMatrix, AMatrix, BMatrix, emiSeq);
-            betaM = betaPass(piMatrix, AMatrix, BMatrix, emiSeq);
+            alphaP2(AMatrix, alphaM, BMatrix, emiSeq, c, piMatrix);
+            //printMatrix(alphaM);
+            betaPass2(AMatrix, BMatrix, betaM, c, emiSeq);
+            printMatrix(betaM);
             diGammaM = diGamma(alphaM, betaM, emiSeq, AMatrix, BMatrix);
             gamma = gamma(diGammaM, alphaM);
 
@@ -390,7 +421,6 @@ public class Main3 {
             estA(diGammaM, gamma, AMatrix);
             estB(diGammaM, gamma, BMatrix, emiSeq);
 
-            printMatrix(AMatrix);
 
         }
 
