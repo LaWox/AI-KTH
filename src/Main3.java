@@ -4,67 +4,6 @@ import java.lang.Math;
 
 public class Main3 {
 
-    static double[][] transpose(double[][] m){
-        int row = m.length;
-        int col = m[0].length;
-
-        double[][] transpM = new double[col][row];
-
-        for(int i = 0; i < row; i++){
-            for(int j = 0; j < col; j++){
-                transpM[j][i] = m[i][j];
-            }
-        }
-        return transpM;
-    }
-
-    static double[][] multiplication(double[][] a, double[] b, double[] o){
-        int aRow = a.length;
-        int aCol = a[0].length;
-        double[][] output = new double[aRow][aCol];
-
-        for (int i=0; i<aRow; i++ ){
-            for( int j=0; j<aCol; j++){
-                output[i][j] = a[j][i]*b[j]*o[i];
-            }
-        }
-        return output;
-    }
-
-    static double[] matrixMultiplication(double[][] a, double[][] b){
-        int aRow = a.length;
-        int aCol = a[0].length;
-        int bRow = b.length;
-        int bCol = b[0].length;
-        double[] output = new double[aRow*bCol+2];
-        output[0] = (double) aRow;
-        output[1] = (double) bCol;
-        int counter=2;
-        double sum=0;
-
-        for (int i=0; i<aRow; i++ ){
-            for( int j=0; j<bCol; j++){
-                for( int k=0; k<aCol; k++){
-                    sum += a[i][k]*b[k][j];
-                }
-                output[counter]=sum;
-                sum=0;
-                counter++;
-            }
-        }
-        return output;
-    }
-
-    static double[][] elementMultiplication(double[] a, double[] b){
-        // elementwive multiplication
-        double[][] outMatrix = new double[1][a.length];
-
-        for (int i = 0; i < a.length; i++){
-            outMatrix[0][i] = a[i]*b[i];
-        }
-        return outMatrix;
-    }
-
     static double[][] createMatrix(double[] a){
         int aRow = (int) a[0];
         int aCol = (int) a[1];
@@ -79,68 +18,12 @@ public class Main3 {
         return matrix;
     }
 
-
-    // retrieve a standing col
-    static double[][] getColStanding(double[][] m, int index){
-        double[][] outCol = new double[1][m.length];
-        for(int i = 0; i < m.length; i++){
-            outCol[i][0] = m[i][index];
-        }
-        return outCol;
-    }
-
     static double[][] getCol(double[][] m, int index){
         double[][] outCol = new double[1][m.length];
         for(int i = 0; i < m.length; i++){
             outCol[0][i] = m[i][index];
         }
         return outCol;
-    }
-
-    static int[] getStates(double[][] delta){
-        int[] states = new int[delta.length];
-        double max = 0;
-        for(int i = 0; i < delta.length; i++){
-            for(int j = 0; j < delta[0].length; j++){
-                if(delta[i][j] >= max){
-                    states[i] = j;
-                    max=delta[i][j];
-                }
-            }
-            if(max==0){
-                states[i]=-1;
-            }
-            max = 0;
-        }
-        return states;
-    }
-
-    static double[] getMax(double[][] delta){
-        double maxProb [] = new double[delta.length];
-        double max = 0;
-
-        for(int i = 0; i < delta.length; i++){
-            for(int j = 0; j < delta[0].length; j++){
-                if(delta[i][j] > max){
-                    max= delta[i][j];
-                    maxProb[i] = delta[i][j];
-                }
-            }
-            max = 0;
-        }
-        return maxProb;
-    }
-
-    static int getMaxIndx(double[] list){
-        int indx=0;
-        double max=0;
-        for(int i=0; i<list.length; i++){
-            if (max<list[i]){
-                max=list[i];
-                indx=i;
-            }
-        }
-        return indx;
     }
 
     static void printMatrix(double[][] m){
@@ -161,53 +44,6 @@ public class Main3 {
         }
     }
 
-    // the alphapass algorithm
-    // TODO: we want the whole matrix in hmm3
-    static double[][] alphaPass(double[][] pi, double[][] a, double[][] b, int[] emission){
-        double[][] stateProb;
-        double[][] col;
-        double[][] alphaM = new double[emission.length][a.length];
-        double[][] alphaTemp = new double[1][emission.length];
-
-        col = getCol(b, emission[0]);
-
-        alphaM[0] = (elementMultiplication(pi[0], col[0]))[0];
-
-        for(int i = 0; i < emission.length-1; i++){
-            col = getCol(b, emission[i+1]);
-            alphaTemp[0] = alphaM[i];
-            stateProb = createMatrix(matrixMultiplication(alphaTemp, a));
-            alphaM[i+1] = (elementMultiplication(stateProb[0], col[0]))[0];
-        }
-        return alphaM;
-    }
-
-    // beta pass
-    static double[][] betaPass(double[][] pi, double[][] a, double[][] b, int[] emission){
-        double[] stateProb;
-        double[][] beta = new double[emission.length][a.length];
-        double[][] betaTemp;
-
-        double[] bCol;
-
-        // last col of beta set to 1's
-        for(int col = 0; col < beta[0].length; col++){
-            beta[beta.length-1][col] = 1;
-        }
-
-        for(int i = emission.length; i < 0; i--){
-            bCol = (getCol(b, emission[i-1]))[0];
-
-            betaTemp = (elementMultiplication(bCol, (getCol(beta,i-1))[0]));
-
-            // the multiplication is reversed form  alphaPass?
-            stateProb = matrixMultiplication(a, transpose(betaTemp));
-
-            beta[i-2] = stateProb;
-        }
-        return beta;
-    }
-
     // di-gamma function
     static void diGamma(double[][][] diGammaM, double[][] gammaM, double[][] alpha, double[][] beta, int[] emissions, double[][] a, double[][] b){
 
@@ -226,10 +62,7 @@ public class Main3 {
             gammaM[i][T-1] = alpha[i][T-1];
         }
     }
-
-
-    // gamma function
-
+        // gamma function
     static double[][] gamma(double diGamma[][][], double alpha[][]){
         int T = diGamma[0][0].length;
         double [][] gamma = new double[diGamma.length][T];
@@ -446,12 +279,19 @@ public class Main3 {
             //System.out.println("curr :" + logPCurrent + " prev: " + logPTemp);
             iters++;
         }
-        System.out.println(iters);
-        printMatrix(AMatrix);
-        System.out.println("------------------");
-        printMatrix(BMatrix);
-        System.out.println("------------------");
-        printMatrix(piMatrix);
 
+        System.out.print(AMatrix.length + " " + AMatrix[0].length + " ");
+        for(int i = 0; i < AMatrix.length; i++){
+            for(int j = 0; j < AMatrix[0].length; j++){
+                System.out.print(AMatrix[i][j] + " ");
+            }
+        }
+        System.out.println();
+        System.out.print(BMatrix.length + " " + BMatrix[0].length + " ");
+        for(int i = 0; i < BMatrix.length; i++){
+            for(int j = 0; j < BMatrix[0].length; j++){
+                System.out.print(BMatrix[i][j] + " ");
+            }
+        }
     }
 }
