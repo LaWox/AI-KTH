@@ -169,6 +169,7 @@ public class Main3 {
         double[][] alphaTemp = new double[1][emission.length];
 
         col = getCol(b, emission[0]);
+
         alphaM[0] = (elementMultiplication(pi[0], col[0]))[0];
 
         for(int i = 0; i < emission.length-1; i++){
@@ -189,7 +190,7 @@ public class Main3 {
         double[] bCol;
 
         // last col of beta set to 1's
-        for(int col = 0; col < beta.length; col++){
+        for(int col = 0; col < beta[0].length; col++){
             beta[beta.length-1][col] = 1;
         }
 
@@ -217,25 +218,43 @@ public class Main3 {
         for(int i = 0; i < a.length; i++){
             sum += alpha[alpha.length-1][i];
         }
-        for(int t = 0; t < T-2; t++){
+        for(int t = 0; t < T-1; t++){
             denom = 0;
-            for(int i = 0; i < a.length-1; i++){
-                for(int j = 0; j < a.length -1; j++){
-                    denom += alpha[i][t]*a[i][j]*b[j][emissions[t+1]]*beta[j][t];
+            for(int i = 0; i < a.length; i++){
+                for(int j = 0; j < a.length; j++){
+                    denom += alpha[t][i]*a[i][j]*b[j][emissions[t+1]]*beta[t][j];
                 }
             }
-            for(int i = 0; i < a.length-1; i++){
-                for(int j = 0; j < a.length-1; j++){
-                    diGamma[i][j][t] = (alpha[i][t]*a[i][j]*b[j][emissions[t+1]])/denom;
-                    gamma[i][t] += diGamma[i][j][t];
+            for(int i = 0; i < a.length; i++){
+                for(int j = 0; j < a.length; j++){
+                    diGamma[i][j][t] = (alpha[t][i]*a[i][j]*b[j][emissions[t+1]])/denom;
+                    //gamma[i][t] += diGamma[i][j][t];
                 }
             }
         }
-
         return diGamma;
     }
 
     // gamma function
+
+    static double[][] gamma(double diGamma[][][], double alpha[][]){
+        int T = diGamma[][][0].length;
+        double [][] gamma = new double[diGamma.length][T];
+        for (int t = 0; t<T-1; t++){
+            for(int i = 0; i<diGamma.length; i++){
+                gamma[i][t] = 0;
+                for( int j=0; j<diGamma.length; j++){
+                    gamma[i][t] += diGamma[i][j][t];
+
+                }
+            }
+
+        }
+        for( int k=0; k<diGamma.length; k++){
+            gamma[k][gamma.length-1] = alpha[]
+        }
+
+    }
 
     public static void main(String[] args){
         String[] aMatrixStr;
@@ -286,6 +305,14 @@ public class Main3 {
         AMatrix = createMatrix(aList);
         BMatrix = createMatrix(bList);
         piMatrix = createMatrix(pi);
+
+        // alpha, beta, gamma and di-gamma
+        double[][] alphaM;
+        double[][] betaM;
+        double[][][] diGammaM;
+        alphaM = alphaPass(piMatrix, AMatrix, BMatrix,  emiSeq);
+        betaM = betaPass(piMatrix, AMatrix, BMatrix, emiSeq);
+        diGammaM = diGamma(alphaM, betaM, emiSeq, AMatrix, BMatrix);
 
     }
 }
