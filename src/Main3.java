@@ -300,6 +300,27 @@ public class Main3 {
         }
     }
 
+    static void alphaP2(double[][] A, double[][] alpha, double[][] B, int[] emis, double[] c ){
+        double[][] observation;
+        for(int t=1; t < emis.length; t++) {
+            c[t] = 0;
+            observation = getCol(b, emis[t])
+            for (int i = 0; i < A.length; i++) {
+                alpha[i][t] = 0;
+                for (int j = 0; j < A.length; j++) {
+                    alpha[i][t] += alpha[j][t - 1] * A[j][i];
+                }
+                alpha[i][t] *= observation[0][i];
+                c[t] += alpha[i][t];
+            }
+
+            c[t] /= c[t];
+            for (int k = 0; k < A.length; k++) {
+                alpha[i][t] *= c[t];
+            }
+        }
+    }
+
 
     public static void main(String[] args){
         String[] aMatrixStr;
