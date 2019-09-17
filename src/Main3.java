@@ -1,5 +1,6 @@
 //Platon Woxler platon@kth.se and Jussi Kangas jkangas@kth.se
 import java.util.Scanner;
+import java.lang.Math;
 
 public class Main3 {
 
@@ -208,32 +209,24 @@ public class Main3 {
     }
 
     // di-gamma function
-    static double[][][] diGamma(double[][] alpha, double[][] beta, int[] emissions, double[][] a, double[][] b){
-        double[][][] diGamma = new double[a.length][a[0].length][emissions.length];
-        double[][] gamma = new double[a.length][emissions.length];
-        int T = emissions.length;
-        double denom = 0;
-        int sum = 0;
+    static void diGamma(double[][][] diGammaM, double[][] gammaM, double[][] alpha, double[][] beta, int[] emissions, double[][] a, double[][] b){
 
-        for(int i = 0; i < a.length; i++){
-            sum += alpha[i][alpha.length-1];
-        }
-        for(int t = 0; t < T-1; t++){
-            denom = 0;
-            for(int i = 0; i < a.length; i++){
-                for(int j = 0; j < a.length; j++){
-                    denom += alpha[i][t]*a[i][j]*b[j][emissions[t+1]]*beta[j][t];
-                }
-            }
-            for(int i = 0; i < a.length; i++){
-                for(int j = 0; j < a.length; j++){
-                    diGamma[i][j][t] = (alpha[i][t]*a[i][j]*b[j][emissions[t+1]])/denom;
-                    //gamma[i][t] += diGamma[i][j][t];
+        int T = emissions.length;
+        for(int t=0; t< T-1; t++){
+            for(int i=0; i<a.length; i++){
+                gammaM[i][t]=0;
+                for(int j=0; j<a.length; j++){
+                    diGammaM[i][j][t] = alpha[i][t]*a[i][j]*b[j][emissions[t+1]]*beta[j][t+1];
+                    gammaM[i][t] += diGammaM[i][j][t];
                 }
             }
         }
-        return diGamma;
+
+        for(int i=0; i<a.length; i++){
+            gammaM[i][T-1] = alpha[i][T-1];
+        }
     }
+
 
     // gamma function
 
@@ -258,6 +251,7 @@ public class Main3 {
 
     static void estPi(double[][] gamma, double[][] pi){
         for(int i=0; i< gamma.length; i++){
+            //System.out.println(gamma[i][0]);
             pi[0][i]=gamma[i][0];
         }
     }
@@ -283,21 +277,30 @@ public class Main3 {
     static void estB(double[][][] digamma, double[][] gamma, double[][] B, int[] emis ){
         double denom;
         double numer;
+
         for (int i = 0; i< B.length; i++) {
             denom = 0;
-            for (int t= 0; t < digamma[0][0].length-1; t++){
+            for (int t= 0; t < digamma[0][0].length; t++){
                 denom += gamma[i][t];
             }
             for (int j=0; j < B[0].length; j++ ){
                 numer=0;
-                for(int k=0; k < digamma[0][0].length-1; k++){
+                for(int k=0; k < digamma[0][0].length; k++){
                     if(emis[k]==j) {
-                        numer += digamma[i][j][k];
+                        numer += gamma[i][k];
                     }
                 }
                 B[i][j]= numer/denom;
             }
         }
+    }
+
+    static double logProb(double[] c){
+        double logP = 0;
+        for (int i=0; i< c.length; i++){
+            logP += Math.log10(c[i]);
+        }
+        return -logP;
     }
 
     static void alphaP2(double[][] A, double[][] alpha, double[][] B, int[] emis, double[] c, double[][] pi ){
@@ -340,12 +343,27 @@ public class Main3 {
             for(int i = 0; i < A.length; i++){
                 beta[i][t] = 0;
                 for(int j = 0; j < A.length; j++){
-                    beta[i][t] += A[i][j]*B[i][emis[t+1]]*beta[j][t];
+                    beta[i][t] += A[i][j]*B[j][emis[t+1]]*beta[j][t+1];
                 }
                 // scale beta
                 beta[i][t] *= scaling[t];
             }
         }
+    }
+
+    static void estimateLambda(double[][] A, double[][] B, double[][] pi, int[] emiSeq, double[][] alpha, double[][] beta, double[] c, double[][][] diGamma, double[][] gamma ){
+        alphaP2(A, alpha, B, emiSeq, c, pi);
+        //printMatrix(alphaM);
+        betaPass2(A, B, beta, c, emiSeq);
+        //printMatrix(betaM);
+        diGamma(diGamma, gamma, alpha, beta, emiSeq, A, B);
+        //System.out.println(diGammaM[0][0][0]);
+        //printMatrix(gamma);
+
+        estPi(gamma, pi);
+        //printMatrix(piMatrix);
+        estA(diGamma, gamma, A);
+        estB(diGamma, gamma, B, emiSeq);
     }
 
 
@@ -400,30 +418,35 @@ public class Main3 {
         piMatrix = createMatrix(pi);
 
 
+        double logPCurrent = 0;
+        double logPTemp = 0;
+        int maxIterations = 100;
+        int iters = 0;
+
         // alpha, beta, gamma and di-gamma
         double[][] alphaM = new double[AMatrix.length][emiSeq.length];
         double[][] betaM = new double[AMatrix.length][emiSeq.length];
-        double[][][] diGammaM;
-        double[][] gamma;
+        double[][] gamma = new double [AMatrix.length][emiSeq.length];
         double[] c = new double[emiSeq.length];
+        double[][][] diGammaM = new double[AMatrix.length][AMatrix[0].length][emiSeq.length];
 
-        for(int i=0; i< 1; i++) {
+        estimateLambda(AMatrix, BMatrix, piMatrix, emiSeq, alphaM, betaM, c, diGammaM, gamma);
+        logPTemp=logProb(c);
+        estimateLambda(AMatrix, BMatrix, piMatrix, emiSeq, alphaM, betaM, c, diGammaM, gamma);
+        logPCurrent=logProb(c);
+
+
+        while(iters < maxIterations && logPCurrent > logPTemp){
             //printMatrix(AMatrix);
 
-            alphaP2(AMatrix, alphaM, BMatrix, emiSeq, c, piMatrix);
-            //printMatrix(alphaM);
-            betaPass2(AMatrix, BMatrix, betaM, c, emiSeq);
-            printMatrix(betaM);
-            diGammaM = diGamma(alphaM, betaM, emiSeq, AMatrix, BMatrix);
-            gamma = gamma(diGammaM, alphaM);
+            estimateLambda(AMatrix, BMatrix, piMatrix, emiSeq, alphaM, betaM, c, diGammaM, gamma);
 
-            estPi(gamma, piMatrix);
-            estA(diGammaM, gamma, AMatrix);
-            estB(diGammaM, gamma, BMatrix, emiSeq);
-
-
+            logPTemp=logPCurrent;
+            logPCurrent = logProb(c);
+            //System.out.println("curr :" + logPCurrent + " prev: " + logPTemp);
+            iters++;
         }
-
+        System.out.println(iters);
         printMatrix(AMatrix);
         System.out.println("------------------");
         printMatrix(BMatrix);
