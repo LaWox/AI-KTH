@@ -2,8 +2,6 @@
 import java.util.Scanner;
 
 public class Main2 {
-
-
     static double[][] multiplication(double[][] a, double[] b, double[] o){
         int aRow = a.length;
         int aCol = a[0].length;
@@ -67,24 +65,6 @@ public class Main2 {
             max = 0;
         }
         return states;
-    }
-
-    static double[][] betaPass(double[][] A, double[][] B, double[][] beta, double[] scaling){
-        // ini last col of beta
-        for(int i = 0; i < A.length; i++){
-            beta[i][beta[0].length-1] = scaling[scaling.length-1];
-        }
-        // init beta
-        for(int t = beta[0].length - 2; t--){
-            for(int i = 0; i < A.length; i++){
-                beta[i][t] = 0;
-                for(int j = 0; j < A.length; j++){
-                    beta[i][t] += A[i][j]*B[i][t+1]*beta[j][t];
-                }
-                // scale beta
-                beta[i][t] *= scaling[t];
-            }
-        }
     }
 
     static double[] getMax(double[][] delta){
