@@ -238,7 +238,7 @@ public class Main3 {
     // gamma function
 
     static double[][] gamma(double diGamma[][][], double alpha[][]){
-        int T = diGamma[][][0].length;
+        int T = diGamma[0][0].length;
         double [][] gamma = new double[diGamma.length][T];
         for (int t = 0; t<T-1; t++){
             for(int i = 0; i<diGamma.length; i++){
@@ -251,10 +251,55 @@ public class Main3 {
 
         }
         for( int k=0; k<diGamma.length; k++){
-            gamma[k][gamma.length-1] = alpha[]
+            gamma[k][gamma.length-1] = alpha[alpha.length-1][k];
         }
-
+        return gamma;
     }
+
+    static void estPi(double[][] gamma, double[][] pi){
+        for(int i=0; i< gamma.length; i++){
+            pi[0][i]=gamma[i][0];
+        }
+    }
+
+    static void estA(double[][][] digamma, double[][] gamma, double[][] A){
+        double denom;
+        double numer;
+        for (int i = 0; i< A.length; i++) {
+            denom = 0;
+            for (int t= 0; t < digamma[0][0].length-1; t++){
+                denom += gamma[i][t];
+            }
+            for (int j=0; j < A.length; j++ ){
+                numer=0;
+                for(int k=0; k < digamma[0][0].length-1; k++){
+                    numer += digamma[i][j][k];
+                }
+                A[i][j]= numer/denom;
+            }
+        }
+    }
+
+    static void estB(double[][][] digamma, double[][] gamma, double[][] B, int[] emis ){
+        double denom;
+        double numer;
+        for (int i = 0; i< B.length; i++) {
+            denom = 0;
+            for (int t= 0; t < digamma[0][0].length-1; t++){
+                denom += gamma[i][t];
+            }
+            for (int j=0; j < B[0].length; j++ ){
+                numer=0;
+                for(int k=0; k < digamma[0][0].length-1; k++){
+                    if(emis[k]==j) {
+                        numer += digamma[i][j][k];
+                    }
+                }
+                B[i][j]= numer/denom;
+            }
+        }
+    }
+
 
     public static void main(String[] args){
         String[] aMatrixStr;
@@ -306,13 +351,33 @@ public class Main3 {
         BMatrix = createMatrix(bList);
         piMatrix = createMatrix(pi);
 
+
         // alpha, beta, gamma and di-gamma
         double[][] alphaM;
         double[][] betaM;
         double[][][] diGammaM;
-        alphaM = alphaPass(piMatrix, AMatrix, BMatrix,  emiSeq);
-        betaM = betaPass(piMatrix, AMatrix, BMatrix, emiSeq);
-        diGammaM = diGamma(alphaM, betaM, emiSeq, AMatrix, BMatrix);
+        double[][] gamma;
+
+        for(int i=0; i< 50; i++) {
+
+            alphaM = alphaPass(piMatrix, AMatrix, BMatrix, emiSeq);
+            betaM = betaPass(piMatrix, AMatrix, BMatrix, emiSeq);
+            diGammaM = diGamma(alphaM, betaM, emiSeq, AMatrix, BMatrix);
+            gamma = gamma(diGammaM, alphaM);
+
+            estPi(gamma, piMatrix);
+            estA(diGammaM, gamma, AMatrix);
+            estB(diGammaM, gamma, BMatrix, emiSeq);
+
+            printMatrix(AMatrix);
+
+        }
+
+        printMatrix(AMatrix);
+        System.out.println("------------------");
+        printMatrix(BMatrix);
+        System.out.println("------------------");
+        printMatrix(piMatrix);
 
     }
 }
