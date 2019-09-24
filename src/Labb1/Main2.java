@@ -146,7 +146,7 @@ public class Main2 {
                     deltaTemp = delta[j][t-1]*a[j][i]*b[i][eSeq[t]];
 
                     //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
-                    if(deltaTemp > max){
+                    if(deltaTemp >= max){
                         delta[i][t] = deltaTemp;
                         maxStates[i][t] = j;
                         max = deltaTemp;
