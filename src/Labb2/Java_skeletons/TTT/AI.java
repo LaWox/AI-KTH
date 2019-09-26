@@ -2,7 +2,7 @@ import java.util.*;
 import java.lang.Math;
 
 public class AI{
-    public static int depth = 3;
+    public static int depth = 4;
 
     // return the "best" next gameState
     public static GameState getBestMove(Vector<GameState> states){
@@ -65,8 +65,9 @@ public class AI{
     private static int evalState(GameState state){
         Move m = state.getMove();
 
+        // return directly if we encouter win or loss
         if(m.isXWin()){
-            return 100;
+            return 10000;
         }
         else if(m.isOWin()){
             return -1;
@@ -88,13 +89,27 @@ public class AI{
                 // add points to the vector, increase by a factor for every new entry
                 if(player == 1){
                     points.set(row, points.get(row)*scaling);
-                    points.add(state.BOARD_SIZE - 1 + col, points.get(state.BOARD_SIZE - 1 + col)*scaling);
+                    points.add(state.BOARD_SIZE + col, points.get(state.BOARD_SIZE - 1 + col)*scaling);
+
+                    // if it's in the first diagonal
+                    if((row+col)%state.BOARD_SIZE+1 == 0){
+                        points.add(state.BOARD_SIZE*2, points.get(state.BOARD_SIZE*2)*scaling);
+                    }
+                    if((row+col)%state.BOARD_SIZE == 0 && row+col != 0){
+                        points.add(state.BOARD_SIZE*2 + 1, points.get(state.BOARD_SIZE*2)*scaling);
+                    }
                 }
 
                 // if an enemy player is encoutered null the value of the row/col
                 else if(player == 2){
-                    points.set(row, -100);
-                    points.set(state.BOARD_SIZE - 1 + col, -100);
+                    points.set(row, 0);
+                    points.set(state.BOARD_SIZE + col, 0);
+                    if((row+col)%state.BOARD_SIZE + 1 == 0){
+                        points.add(state.BOARD_SIZE*2, 0);
+                    }
+                    if((row+col)%state.BOARD_SIZE == 0){
+                        points.add(state.BOARD_SIZE*2 + 1, 0);
+                    }
                 }
             }
         }
@@ -105,6 +120,7 @@ public class AI{
                 value += i;
             }
         }
+        //System.err.println("Value: " + value);
         return value;
     }
 
