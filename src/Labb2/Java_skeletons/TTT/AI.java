@@ -2,7 +2,7 @@ import java.util.*;
 import java.lang.Math;
 
 public class AI{
-    public static int depth = 4;
+    public static int depth = 1;
 
     // return the "best" next gameState
     public static GameState getBestMove(Vector<GameState> states){
@@ -30,31 +30,43 @@ public class AI{
         Vector<GameState> nextStates = new Vector<GameState>();
         state.findPossibleMoves(nextStates);
 
+        /**
+        // Try testing win/loss before going into depth search
+        Move m = state.getMove();
+
+        if(m.isXWin()){
+            return 1000+depth;
+        }
+
+        else if(m.isOWin()){
+            return -1;
+        }
+         */
         if (depth==0 || nextStates.size()==0){
             v = evalState(state);
         }
 
         // 2 is 'O' so if nextPlayer is 2 it means that the current player is 'X'
-        else if (state.getNextPlayer() == 2){
+        else if (state.getNextPlayer() == 1){
             v=Double.NEGATIVE_INFINITY;
 
             for(GameState s: nextStates){
                 v = Math.max(v, minMaxPruning(s,depth-1, alpha, beta));
                 alpha = Math.max(alpha, v);
                 if(beta <= alpha) {
-                    break;
+                    return v;
                 }
             }
         }
         // 1 is 'X' so if nextplayer is 1 it means that the current player is 'O'
-        else if (state.getNextPlayer() == 1){
+        else if (state.getNextPlayer() == 2){
             v=Double.POSITIVE_INFINITY;
 
             for(GameState s: nextStates){
                 v= Math.min(v,minMaxPruning(s,depth-1, alpha, beta));
                 beta = Math.min(beta, v);
                 if( beta <= alpha ) {
-                    break;
+                    return v;
                 }
             }
         }
@@ -64,6 +76,7 @@ public class AI{
     // eval a state and return its value
     private static int evalState(GameState state){
         Move m = state.getMove();
+        int counter = 0;
 
         // return directly if we encouter win or loss
         if(m.isXWin()){
@@ -72,15 +85,13 @@ public class AI{
         else if(m.isOWin()){
             return -1;
         }
-        int player;
+
         Vector<Integer> points = new Vector<Integer>();
         points.setSize(state.BOARD_SIZE*2+2);
+        int player;
         Collections.fill(points, 1);
-        int scaling = 3;
+        int scaling = 4;
         int value = 0;
-
-        // where there is an enemy pllayer in the way we want to set the value to zero
-        Vector<Integer> obstructions = new Vector<Integer>();
 
         for(int row = 0; row < state.BOARD_SIZE; row ++){
             for(int col = 0; col < state.BOARD_SIZE; col ++){
@@ -92,31 +103,33 @@ public class AI{
                     points.add(state.BOARD_SIZE + col, points.get(state.BOARD_SIZE - 1 + col)*scaling);
 
                     // if it's in the first diagonal
-                    if((row+col)%state.BOARD_SIZE+1 == 0){
+                    if(counter%state.BOARD_SIZE+1 == 0){
                         points.add(state.BOARD_SIZE*2, points.get(state.BOARD_SIZE*2)*scaling);
                     }
-                    if((row+col)%state.BOARD_SIZE == 0 && row+col != 0){
+
+                    // checking other diagonal
+                    if(counter%state.BOARD_SIZE-1 == 0 && row+col != 0){
                         points.add(state.BOARD_SIZE*2 + 1, points.get(state.BOARD_SIZE*2)*scaling);
                     }
                 }
-
                 // if an enemy player is encoutered null the value of the row/col
                 else if(player == 2){
                     points.set(row, 0);
                     points.set(state.BOARD_SIZE + col, 0);
-                    if((row+col)%state.BOARD_SIZE + 1 == 0){
+                    if(counter%state.BOARD_SIZE+1 == 0){
                         points.add(state.BOARD_SIZE*2, 0);
                     }
-                    if((row+col)%state.BOARD_SIZE == 0){
+                    if(counter%state.BOARD_SIZE-1 == 0){
                         points.add(state.BOARD_SIZE*2 + 1, 0);
                     }
                 }
+                counter++;
             }
         }
 
         // if we have nulled the point we don't count it for the value of the state
         for(Integer i: points){
-            if(i > 0){
+            if(i > 1){
                 value += i;
             }
         }
