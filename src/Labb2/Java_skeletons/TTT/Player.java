@@ -1,3 +1,6 @@
+// Platon Woxler platon@kth.se
+// Jussi Kangas jkangas@kth.se
+
 import java.util.*;
 
 public class Player {
