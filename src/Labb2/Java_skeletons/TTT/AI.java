@@ -2,7 +2,7 @@ import java.util.*;
 import java.lang.Math;
 
 public class AI{
-    public static int depth = 1;
+    public static int depth = 4;
 
     // return the "best" next gameState
     public static GameState getBestMove(Vector<GameState> states){
