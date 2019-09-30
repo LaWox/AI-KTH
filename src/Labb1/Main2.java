@@ -138,13 +138,11 @@ public class Main2 {
         for(int i = 0; i < delta.length; i++){
             delta[i][0] = pi[i]*b[i][eSeq[0]];
         }
-
         for(int t = 1; t < delta[0].length; t++){
             for(int i = 0; i < delta.length; i ++){
                 max = 0;
                 for(int j = 0; j < delta.length; j++){
                     deltaTemp = delta[j][t-1]*a[j][i]*b[i][eSeq[t]];
-
                     //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
                     if(deltaTemp >= max){
                         delta[i][t] = deltaTemp;
@@ -172,8 +170,6 @@ public class Main2 {
             states[col -1] = maxState;
         }
         max = 0;
-        maxState = 0;
-
         // set last col
         for(int i = 0; i < delta.length; i++){
             if(delta[i][delta[0].length-1] > max){
@@ -263,8 +259,8 @@ public class Main2 {
 
         viterbiDynamic(AMatrix, BMatrix, emiSeq, piMatrix[0], delta, states);
         maxStates = getPath(delta, states);
-        //printMatrix(states);
 
+        //printMatrix(states);
         //System.out.println("------------------------");
 
         for(int i: maxStates){
