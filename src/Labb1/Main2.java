@@ -163,7 +163,7 @@ public class Main2 {
 
         for(int col = delta[0].length-1; col > 0; col--){
             max = 0;
-            for(int row = 0; row < delta[0].length; row++){
+            for(int row = 0; row < delta.length; row++){
                 if(delta[row][col] >= max){
                     maxState = stateMatrix[row][col];
                     max = delta[row][col];
@@ -247,7 +247,6 @@ public class Main2 {
 
         for(int i=0; i<emiStr.length-1; i++){
             emiSeq[i]=Integer.parseInt(emiStr[i+1]);
-            //System.out.println(emiSeq[i]);
         }
 
         // create matrixes
@@ -255,8 +254,8 @@ public class Main2 {
         BMatrix = createMatrix(bList);
         piMatrix = createMatrix(pi);
 
-        double[][] delta = new double[AMatrix.length][BMatrix[0].length];
-        int[][] states = new int[AMatrix.length][BMatrix[0].length];
+        double[][] delta = new double[AMatrix.length][emiSeq.length];
+        int[][] states = new int[AMatrix.length][emiSeq.length];
 
         int [] maxStates = new int[delta[0].length];
 
