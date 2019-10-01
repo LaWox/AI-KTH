@@ -1,5 +1,6 @@
 //Platon Woxler platon@kth.se and Jussi Kangas jkangas@kth.se
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Main2 {
     static double[][] multiplication(double[][] a, double[] b, double[] o){
@@ -134,12 +135,15 @@ public class Main2 {
     static void viterbiDynamic(double[][] a, double[][] b, int[] eSeq, double[] pi, double[][] delta, int[][] maxStates){
         double max;
         double deltaTemp;
+        for(int[] arr: maxStates){
+            Arrays.fill(arr,-1);
+        }
 
         for(int i = 0; i < delta.length; i++){
             delta[i][0] = pi[i]*b[i][eSeq[0]];
         }
         for(int t = 1; t < delta[0].length; t++){
-            for(int i = 0; i < delta.length; i ++){
+            for(int i = 0; i < delta.length; i++){
                 max = 0;
                 for(int j = 0; j < delta.length; j++){
                     deltaTemp = delta[j][t-1]*a[j][i]*b[i][eSeq[t]];
@@ -150,11 +154,9 @@ public class Main2 {
                         delta[i][t] = deltaTemp;
                         maxStates[i][t] = j;
                         max = deltaTemp;
+
                     }
                 }
-                //printMatrix(maxStates);
-                //System.out.println();
-                //printMatrix(delta);
             }
         }
     }
@@ -167,19 +169,14 @@ public class Main2 {
         for(int col = delta[0].length-1; col > 0; col--){
             max = 0;
             for(int row = 0; row < delta.length; row++){
-                if(col==5){
-                    //System.out.println(delta[row][col]);
-                }
+
                 if(delta[row][col] >= max){
                     maxState = stateMatrix[row][col];
                     max = delta[row][col];
-                    if(col==5){
-                        //System.out.println("row: "+row+" col: "+col+" maxstate: "+maxState);
-                        //printMatrix(stateMatrix);
-                    }
+
                 }
             }
-            states[col -1] = maxState;
+            states[col-1] = maxState;
         }
         max = 0;
         // set last col
@@ -272,7 +269,9 @@ public class Main2 {
         viterbiDynamic(AMatrix, BMatrix, emiSeq, piMatrix[0], delta, states);
         maxStates = getPath(delta, states);
 
-        //printMatrix(states);
+        printMatrix(delta);
+
+        printMatrix(states);
         //System.out.println("------------------------");
 
         for(int i: maxStates){
