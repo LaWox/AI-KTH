@@ -3,29 +3,6 @@ import java.util.Scanner;
 import java.util.Arrays;
 
 public class Main2 {
-    static double[][] multiplication(double[][] a, double[] b, double[] o){
-        int aRow = a.length;
-        int aCol = a[0].length;
-        double[][] output = new double[aRow][aCol];
-
-        for (int i=0; i<aRow; i++ ){
-            for( int j=0; j<aCol; j++){
-                output[i][j] = a[j][i]*b[j]*o[i];
-            }
-        }
-
-        return output;
-    }
-
-    static double[][] elementMultiplication(double[] a, double[] b){
-        // elementwive multiplication
-        double[][] outMatrix = new double[1][a.length];
-
-        for (int i = 0; i < a.length; i++){
-            outMatrix[0][i] = a[i]*b[i];
-        }
-        return outMatrix;
-    }
 
     static double[][] createMatrix(double[] a){
         int aRow = (int) a[0];
@@ -50,88 +27,6 @@ public class Main2 {
         return outCol;
     }
 
-    static int[] getStates(double[][] delta){
-        int[] states = new int[delta.length];
-        double max = 0;
-        for(int i = 0; i < delta.length; i++){
-            for(int j = 0; j < delta[0].length; j++){
-                if(delta[i][j] >= max){
-                    states[i] = j;
-                    max=delta[i][j];
-                }
-            }
-            if(max==0){
-                states[i]=-1;
-            }
-            max = 0;
-        }
-        return states;
-    }
-
-    static double[] getMax(double[][] delta){
-        double maxProb [] = new double[delta.length];
-        double max = 0;
-
-        for(int i = 0; i < delta.length; i++){
-            for(int j = 0; j < delta[0].length; j++){
-                if(delta[i][j] > max){
-                    max= delta[i][j];
-                    maxProb[i] = delta[i][j];
-                }
-            }
-            max = 0;
-        }
-
-        return maxProb;
-    }
-
-    static int getMaxIndx(double[] list){
-        int indx=0;
-        double max=0;
-        for(int i=0; i<list.length; i++){
-            if (max<list[i]){
-                max=list[i];
-                indx=i;
-            }
-        }
-        return indx;
-    }
-
-    static int[] viterbi(double[][] a, double[][] b, double[] pi, int[] emissions ){
-        int[][] statesMatrix= new int[emissions.length][a.length];
-        double[][] delta = new double[emissions.length][a.length];
-        double [] observation = (getCol(b, emissions[0]))[0];
-        int[] states=new int[emissions.length];
-
-        delta[0] = (elementMultiplication(observation, pi))[0];
-        double [][] deltaTemp;
-
-        for (int i=0; i < emissions.length-1; i++ ){
-            // Get new delta value
-            observation=(getCol(b, emissions[i+1]))[0];
-            // A*delta*observations
-            deltaTemp = multiplication(a, delta[i], observation);
-
-            // Find max state
-            statesMatrix[i]=getStates(deltaTemp);
-
-            delta[i+1]= getMax(deltaTemp);
-            }
-
-        // Get correct states
-        double max=0;
-        for(int i=emissions.length-1; i>0; i--){
-            for(int j=0; j<delta[0].length; j++){
-                if (delta[i][j]> max){
-                    max=delta[i][j];
-                    states[i-1]=statesMatrix[i-1][j];
-                }
-            }
-            max=0;
-        }
-        states[emissions.length-1]=getMaxIndx(delta[delta.length-1]);
-        return states;
-    }
     static void viterbiDynamic(double[][] a, double[][] b, int[] eSeq, double[] pi, double[][] delta, int[][] maxStates){
         double max;
         double deltaTemp;
@@ -157,6 +52,7 @@ public class Main2 {
 
                     }
                 }
+                //System.out.println(delta[i][t] +" "+maxStates[i][t]);
             }
         }
     }
@@ -170,13 +66,16 @@ public class Main2 {
             max = 0;
             for(int row = 0; row < delta.length; row++){
 
+                System.out.println("Delta "+delta[row][col]+" state "+stateMatrix[row][col]);
+
                 if(delta[row][col] >= max){
                     maxState = stateMatrix[row][col];
                     max = delta[row][col];
-
                 }
             }
             states[col-1] = maxState;
+            System.out.println(maxState);
+            System.out.println("maxdelta "+ max);
         }
         max = 0;
         // set last col
@@ -269,15 +168,15 @@ public class Main2 {
         viterbiDynamic(AMatrix, BMatrix, emiSeq, piMatrix[0], delta, states);
         maxStates = getPath(delta, states);
 
-        printMatrix(delta);
+        //printMatrix(delta);
 
-        printMatrix(states);
+        //printMatrix(states);
         //System.out.println("------------------------");
 
         for(int i: maxStates){
             System.out.print(i+" ");
         }
-        System.out.println();
+        //System.out.println();
 
     }
 }
