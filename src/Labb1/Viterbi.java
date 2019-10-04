@@ -2,11 +2,11 @@ import java.util.Scanner;
 
 public class Viterbi {
 
-    private static class TNode {
+    private static class TimeStepNode {
         public int[] v_path;
         public double v_prob;
 
-        public TNode( int[] v_path, double v_prob) {
+        public TimeStepNode(int[] v_path, double v_prob) {
             this.v_path = copyIntArray(v_path);
             this.v_prob = v_prob;
         }
@@ -33,18 +33,18 @@ public class Viterbi {
     // transition_probability, emission_probability)
     public int[] forwardViterbi(String[] observations, String[] hiddenStates, double[] sp, double[][] tp, double[][] ep) {
         double [][] emission;
-        TNode[] T = new TNode[hiddenStates.length];
+        TimeStepNode[] T = new TimeStepNode[hiddenStates.length];
         emission = getCol(ep,Integer.parseInt(observations[0]));
 
         for (int state = 0; state < hiddenStates.length; state++) {
             //System.out.println(sp[state] +" "+ X.length);
             int[] intArray = new int[1];
             intArray[0] = state;
-            T[state] = new TNode( intArray, sp[state] * emission[0][state]);
+            T[state] = new TimeStepNode( intArray, sp[state] * emission[0][state]);
         }
 
         for (int output = 1; output < observations.length; output++) {
-            TNode[] U = new TNode[hiddenStates.length];
+            TimeStepNode[] U = new TimeStepNode[hiddenStates.length];
             emission=getCol(ep,Integer.parseInt(observations[output]));
 
             for (int next_state = 0; next_state < hiddenStates.length; next_state++) {
@@ -53,21 +53,40 @@ public class Viterbi {
 
                 for (int state = 0; state < hiddenStates.length; state++) {
                     int[] v_path = copyIntArray(T[state].v_path);
+
                     double v_prob = T[state].v_prob;
                     double p = emission[0][next_state] * tp[state][next_state];
 
+                    if(output==5){
+                        //System.out.println("p "+p+" v_prob "+v_prob);
+                    }
+
                     v_prob *= p;
+
+                    if(output==5){
+                        System.out.println("v_prob after multiplication: "+v_prob);
+                    }
+
                     if (v_prob > valmax) {
                         if (v_path.length == observations.length) {
                             argmax = copyIntArray(v_path);
                         } else {
+
+                            if(output==5){
+                                System.out.println("next state "+next_state);
+                            }
+
                             argmax = copyIntArray(v_path, next_state);
                         }
                         valmax = v_prob;
 
+                        if(output==5){
+                            System.out.println("valmax "+valmax);
+                        }
+
                     }
                 }
-                U[next_state] = new TNode( argmax, valmax);
+                U[next_state] = new TimeStepNode( argmax, valmax);
             }
             T = U;
         }
@@ -175,7 +194,7 @@ public class Viterbi {
         int[] argmax;
         argmax=v.forwardViterbi(emissions, statesList, piMatrix[0], AMatrix, BMatrix);
 
-        System.out.print("Viterbi path: ");
+        //System.out.print("Viterbi path: ");
         for (int i = 0; i < argmax.length; i++) {
             System.out.print(statesList[argmax[i]] + " ");
         }

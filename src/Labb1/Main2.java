@@ -40,17 +40,30 @@ public class Main2 {
         for(int t = 1; t < delta[0].length; t++){
             for(int i = 0; i < delta.length; i++){
                 max = 0;
+
+                int count=0;
                 for(int j = 0; j < delta.length; j++){
                     deltaTemp = delta[j][t-1]*a[j][i]*b[i][eSeq[t]];
 
                         //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
+                    if(t==5){
+                        //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
+                        System.out.println(deltaTemp);
+                    }
 
                     if(deltaTemp > max){
                         delta[i][t] = deltaTemp;
                         maxStates[i][t] = j;
                         max = deltaTemp;
 
+                        if(t==5){
+                            //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
+                            System.out.println("count "+count+" i "+i+" t "+t+" j "+j+" max "+max);
+
+                        }
+
                     }
+                    count++;
                 }
                 //System.out.println(delta[i][t] +" "+maxStates[i][t]);
             }
@@ -66,7 +79,7 @@ public class Main2 {
             max = 0;
             for(int row = 0; row < delta.length; row++){
 
-                System.out.println("Delta "+delta[row][col]+" state "+stateMatrix[row][col]);
+                //System.out.println("Delta "+delta[row][col]+" state "+stateMatrix[row][col]);
 
                 if(delta[row][col] >= max){
                     maxState = stateMatrix[row][col];
@@ -74,8 +87,8 @@ public class Main2 {
                 }
             }
             states[col-1] = maxState;
-            System.out.println(maxState);
-            System.out.println("maxdelta "+ max);
+            //System.out.println(maxState);
+            //System.out.println("maxdelta "+ max);
         }
         max = 0;
         // set last col
