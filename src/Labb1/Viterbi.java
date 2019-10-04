@@ -165,7 +165,7 @@ public class Viterbi {
             //System.out.println(pi[i]);
         }
 
-        
+
         // create matrixes
         AMatrix = createMatrix(aList);
         BMatrix = createMatrix(bList);
