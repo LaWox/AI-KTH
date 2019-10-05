@@ -69,12 +69,13 @@ public class AI3D{
 
     // eval a state and return its value
     private static int evalState(GameState state, int[][] points){
-        int counter = 0;
-
+        int counter;
         int player;
+
         for(int[] arr: points){
             Arrays.fill(arr, 1);
         }
+
         int scaling = 10;
         int value = 0;
 
@@ -83,6 +84,7 @@ public class AI3D{
             for(int row = 0; row < state.BOARD_SIZE; row ++){
                 for(int col = 0; col < state.BOARD_SIZE; col ++){
                     player = state.at(row, col, layer);
+
                     // add points to the vector, increase by a factor for every new entry
                     if(player == 1){
                         points[layer][row] *= scaling;
