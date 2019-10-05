@@ -70,7 +70,7 @@ public class AI3D{
     // eval a state and return its value
     private static int evalState(GameState state, int[][] points){
         int counter = 0;
-        // TODO: create this once instead
+
         int player;
         for(int[] arr: points){
             Arrays.fill(arr, 1);
@@ -119,6 +119,7 @@ public class AI3D{
             // if a latyer contains a win
             for(int i: points[layer]){
                 if(i == 10000){
+                    //System.err.print(i + " " + " layer " + layer);
                     return 1000000;
                 }
                 else if(i > 1){
@@ -133,7 +134,7 @@ public class AI3D{
         for(int i = 0; i < state.BOARD_SIZE; i++){
             for(int point: points[i+state.BOARD_SIZE]){
                 if(point == 10000){
-                    System.err.print(point + " ");
+                    //System.err.print(point + " ");
                     return 1000000;
                 }
                 else if(point > 1){
