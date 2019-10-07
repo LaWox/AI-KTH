@@ -194,6 +194,7 @@ public class Viterbi {
         int[] argmax;
         argmax=v.forwardViterbi(emissions, statesList, piMatrix[0], AMatrix, BMatrix);
 
+
         //System.out.print("Viterbi path: ");
         for (int i = 0; i < argmax.length; i++) {
             System.out.print(statesList[argmax[i]] + " ");

@@ -34,7 +34,7 @@ public class Main2 {
             Arrays.fill(arr,-1);
         }
 
-        System.out.println(delta.length);
+        //System.out.println(delta.length);
         for(int i = 0; i < delta.length; i++){
             delta[i][0] = pi[i]*b[i][eSeq[0]];
         }
@@ -47,25 +47,25 @@ public class Main2 {
 
 
                         //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
-                   /**
+
                     if(t==5){
                         //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
                         System.out.println(deltaTemp);
                     }
-                    */
+
 
                     if(deltaTemp >= max){
                         delta[i][t] = deltaTemp;
                         maxStates[i][t] = j;
                         max = deltaTemp;
 
-                        /**
+
                         if(t==5){
                             //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
                             System.out.println("count "+count+" i "+i+" t "+t+" j "+j+" max "+max);
 
                         }
-                         */
+
 
 
                     }
