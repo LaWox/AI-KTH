@@ -48,10 +48,10 @@ public class Main2 {
 
                         //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
 
-                    if(t==5){
+                    /*if(t==6){
                         //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
                         System.out.println(deltaTemp);
-                    }
+                    } */
 
 
                     if(deltaTemp >= max){
@@ -60,7 +60,7 @@ public class Main2 {
                         max = deltaTemp;
 
 
-                        if(t==5){
+                        if(t==6){
                             //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
                             System.out.println("count "+count+" i "+i+" t "+t+" j "+j+" max "+max);
 
@@ -77,6 +77,38 @@ public class Main2 {
     }
 
     static int[] getPath(double[][] delta, int[][] stateMatrix){
+        int[] states = new int[delta[0].length];
+        double max;
+        int maxState = -1;
+
+        for(int col = delta[0].length-1; col > 0; col--){
+            max = 0;
+            for(int row = 0; row < delta.length; row++){
+
+                //System.out.println("Delta "+delta[row][col]+" state "+stateMatrix[row][col]);
+
+                if(delta[row][col] >= max){
+                    maxState = stateMatrix[row][col];
+                    max = delta[row][col];
+                }
+            }
+            states[col-1] = maxState;
+            //System.out.println(maxState);
+            //System.out.println("maxdelta "+ max);
+        }
+        max = 0;
+        // set last col
+        for(int i = 0; i < delta.length; i++){
+            if(delta[i][delta[0].length-1] > max){
+                max = delta[i][delta[0].length-1];
+                maxState = i;
+            }
+        }
+        states[states.length-1] = maxState;
+        return states;
+    }
+
+    static int[] getPath2(double[][] delta, int[][] stateMatrix){
         int[] states = new int[delta[0].length];
         double max;
         int maxState = -1;
@@ -190,7 +222,7 @@ public class Main2 {
         //printMatrix(delta);
 
         //printMatrix(states);
-        System.out.println("------------------------");
+        //System.out.println("------------------------");
 
         for(int i: maxStates){
             System.out.print(i+" ");

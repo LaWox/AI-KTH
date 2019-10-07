@@ -37,7 +37,7 @@ public class Viterbi {
         emission = getCol(ep,Integer.parseInt(observations[0]));
 
         for (int state = 0; state < hiddenStates.length; state++) {
-            //System.out.println(sp[state] +" "+ X.length);
+            //System.out.println(sp[state] +" "+ hiddenStates.length);
             int[] intArray = new int[1];
             intArray[0] = state;
             T[state] = new TimeStepNode( intArray, sp[state] * emission[0][state]);
@@ -63,26 +63,26 @@ public class Viterbi {
 
                     v_prob *= p;
 
-                    if(output==5){
+                    /*if(output==5){
                         System.out.println("v_prob after multiplication: "+v_prob);
-                    }
+                    } */
 
                     if (v_prob > valmax) {
                         if (v_path.length == observations.length) {
                             argmax = copyIntArray(v_path);
                         } else {
 
-                            if(output==5){
-                                System.out.println("next state "+next_state);
-                            }
+                             /*if(output==5){
+                                System.out.println("next state "+next_state+" state: "+state);
+                            } */
 
                             argmax = copyIntArray(v_path, next_state);
                         }
                         valmax = v_prob;
 
-                        if(output==5){
-                            System.out.println("valmax "+valmax);
-                        }
+                        /*if(output==5){
+                            System.out.println(output+" valmax "+valmax);
+                        } */
 
                     }
                 }
