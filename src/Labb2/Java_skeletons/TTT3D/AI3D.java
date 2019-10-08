@@ -12,10 +12,12 @@ public class AI3D{
 
         // Array to store points in
         int[][] points = new int[states.get(0).BOARD_SIZE*2][states.get(0).BOARD_SIZE*2+2];
+        int[][] enemyPoints = new int[states.get(0).BOARD_SIZE*2][states.get(0).BOARD_SIZE*2+2];
+
 
         // find state with max value and save its index
         for(int i = 0; i < states.size(); i++){
-            v = minMaxPruning(states.get(i), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, points);
+            v = minMaxPruning(states.get(i), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, points, enemyPoints);
             if(max < v){
                 max = v;
                 index = i;
@@ -25,7 +27,7 @@ public class AI3D{
     }
 
     // minMax-alg with pruning, recursive
-    private static double minMaxPruning(GameState state, int depth, double alpha, double beta, int[][] points){
+    private static double minMaxPruning(GameState state, int depth, double alpha, double beta, int[][] points, int[][] enemyPoints){
 
         double v = 0;
 
@@ -34,7 +36,7 @@ public class AI3D{
         state.findPossibleMoves(nextStates);
 
         if (depth==0 || nextStates.size()==0){
-            v = evalState(state, points);
+            v = evalState(state, points, enemyPoints);
         }
 
         // 2 is 'O' so if nextPlayer is 2 it means that the current player is 'X'
@@ -42,12 +44,12 @@ public class AI3D{
             v=Double.NEGATIVE_INFINITY;
 
             for(GameState s: nextStates){
-                v = Math.max(v, minMaxPruning(s,depth-1, alpha, beta, points));
+                v = Math.max(v, minMaxPruning(s,depth-1, alpha, beta, points, enemyPoints));
                 alpha = Math.max(alpha, v);
 
                 // if we find win
-                if(v == 10000){
-                    return 1000000;
+                if(v == 1000000){
+                    return v;
                 }
                 if(beta <= alpha){
                     return v;
@@ -59,8 +61,12 @@ public class AI3D{
             v=Double.POSITIVE_INFINITY;
 
             for(GameState s: nextStates){
-                v= Math.min(v,minMaxPruning(s,depth-1, alpha, beta, points));
+                v= Math.min(v,minMaxPruning(s,depth-1, alpha, beta, points, enemyPoints));
                 beta = Math.min(beta, v);
+
+                if(v == -1000000){
+                    return v;
+                }
                 if(beta <= alpha || v == 0){
                     return v;
                 }
@@ -70,15 +76,19 @@ public class AI3D{
     }
 
     // eval a state and return its value
-    private static int evalState(GameState state, int[][] points){
+    private static int evalState(GameState state, int[][] points, int[][] enemyPoints){
         int counter;
         int player;
+
 
         for(int[] arr: points){
             Arrays.fill(arr, 1);
         }
+        for(int[] arr: enemyPoints){
+            Arrays.fill(arr, 1);
+        }
 
-        int scaling = 10;
+        int scaling = 2;
         int value = 0;
 
         for(int layer = 0; layer < state.BOARD_SIZE; layer ++){
@@ -94,7 +104,6 @@ public class AI3D{
                         points[col + state.BOARD_SIZE][row] *= scaling;
                         points[col + state.BOARD_SIZE][state.BOARD_SIZE + layer] *= scaling;
 
-                        /**
                         // if it's in the first diagonal
                         if(counter%state.BOARD_SIZE+1 == 0){
                             points[layer][state.BOARD_SIZE*2] *= scaling;
@@ -104,55 +113,57 @@ public class AI3D{
                         if(counter%state.BOARD_SIZE-1 == 0 && row+col != 0){
                             points[layer][state.BOARD_SIZE*2 + 1] *= scaling;
                         }
-                         */
+
                     }
                     // if an enemy player is encoutered null the value of the row/col
                     else if(player == 2){
-                        points[layer][row] = 0;
-                        points[layer][state.BOARD_SIZE + col] = 0;
-                        points[col + state.BOARD_SIZE][row] *= 0;
-                        points[col + state.BOARD_SIZE][state.BOARD_SIZE + layer] *= 0;
+                        enemyPoints[layer][row] *= scaling;
+                        enemyPoints[layer][state.BOARD_SIZE + col] *= scaling;
+                        enemyPoints[col + state.BOARD_SIZE][row] *= scaling;
+                        enemyPoints[col + state.BOARD_SIZE][state.BOARD_SIZE + layer] *= scaling;
 
-                        /**
                         if(counter%state.BOARD_SIZE+1 == 0){
-                            points[layer][state.BOARD_SIZE*2] = 0;
+                            enemyPoints[layer][state.BOARD_SIZE*2] *= scaling;
                         }
                         if(counter%state.BOARD_SIZE-1 == 0){
-                            points[layer][state.BOARD_SIZE*2 + 1] = 0;
+                            enemyPoints[layer][state.BOARD_SIZE*2 + 1] *= scaling;
                         }
-                         */
                     }
                     counter++;
                 }
             }
-
             // if a layer contains a win
-            counter = 0;
-            for(int i: points[layer]){
-                if(i == 10000){
+            for(int i = 0; i < points[0].length; i++){
+                if(points[layer][i] - enemyPoints[layer][i] == (15)){
+                    //System.err.println("Winning");
                     return 1000000;
                 }
-                else if(i > 1){
-                    value += i;
+                else if(points[layer][i] - enemyPoints[layer][i] == (-15)){
+                    return -1000000;
                 }
-
+                else{
+                    value += (points[layer][i] - enemyPoints[layer][i]);
+                }
             }
         }
 
         // if we have nulled the point we don't count it for the value of the state
-
         for(int i = 0; i < state.BOARD_SIZE; i++){
-            for(int point: points[i+state.BOARD_SIZE]){
-                if(point == 10000){
-                    //System.err.print(point + " ");
+            for(int j = 0; j < state.BOARD_SIZE; j++){
+                if(points[i+state.BOARD_SIZE][j] - enemyPoints[i+state.BOARD_SIZE][j] == (15)){
+                    //System.err.println("Winning");
                     return 1000000;
                 }
-                else if(point > 1){
-                    value += point;
+                else if(points[i+state.BOARD_SIZE][j] - enemyPoints[i+state.BOARD_SIZE][j] == (-15)){
+                    return -1000000;
+                }
+                else{
+                    value += (points[i+state.BOARD_SIZE][j] - enemyPoints[i+state.BOARD_SIZE][j]);
                 }
 
             }
         }
+        //System.err.println(value);
         return value;
     }
 
