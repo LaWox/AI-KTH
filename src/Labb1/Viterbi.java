@@ -50,6 +50,7 @@ public class Viterbi {
             for (int next_state = 0; next_state < hiddenStates.length; next_state++) {
                 int[] argmax = new int[0];
                 double valmax = 0;
+                int maxstate =-1;
 
                 for (int state = 0; state < hiddenStates.length; state++) {
                     int[] v_path = copyIntArray(T[state].v_path);
@@ -65,6 +66,7 @@ public class Viterbi {
                             argmax = copyIntArray(v_path);
                         } else {
                             argmax = copyIntArray(v_path, next_state);
+                            maxstate = next_state;
                         }
                         valmax = v_prob;
 
@@ -72,11 +74,18 @@ public class Viterbi {
                     }
                 }
                 U[next_state] = new TimeStepNode( argmax, valmax);
-                if(t==8)
-                System.out.print(valmax+": next_state:"+next_state+": ");
+
+
+                if(output==8 || output==9)
+                {
+                System.out.print(valmax+": max_state:"+maxstate+": ");
+                }
 
             }
-            System.out.println();
+            if(output==8 || output==9){
+                System.out.println();
+            }
+
             T = U;
         }
         // apply sum/max to the final states:
