@@ -57,15 +57,8 @@ public class Main2 {
                     }
                 }
 
-                if(t==8 || t==9)
-                {
-                System.out.print(delta[i][t]+": maxstates:"+maxStates[i][t]+": ");
+            }
 
-                }
-            }
-            if(t==8 || t==9) {
-                System.out.println();
-            }
         }
     }
 
@@ -73,23 +66,7 @@ public class Main2 {
         int[] states = new int[delta[0].length];
         double max;
         int maxState = -1;
-
-        for(int col = delta[0].length-1; col > 0; col--){
-            max = 0;
-            for(int row = 0; row < delta.length; row++){
-
-                //System.out.println("Delta "+delta[row][col]+" state "+stateMatrix[row][col]);
-
-                if(delta[row][col] >= max){
-                    maxState = stateMatrix[row][col];
-                    max = delta[row][col];
-                }
-            }
-            states[col-1] = maxState;
-            //System.out.println(maxState);
-            //System.out.println("maxdelta "+ max);
-        }
-        max = 0;
+        max=0;
         // set last col
         for(int i = 0; i < delta.length; i++){
             if(delta[i][delta[0].length-1] > max){
@@ -98,6 +75,16 @@ public class Main2 {
             }
         }
         states[states.length-1] = maxState;
+
+        for(int col = delta[0].length-1; col > 0; col--){
+            max = 0;
+
+            states[col-1] = stateMatrix[states[col]][col];
+            //System.out.println(maxState);
+            //System.out.println("maxdelta "+ max);
+        }
+
+
         return states;
     }
 
@@ -187,8 +174,8 @@ public class Main2 {
         for(int i: maxStates){
             System.out.print(i+" ");
         }
-        System.out.println();
-        printMatrix(states);
+        //System.out.println();
+        //printMatrix(states);
 
     }
 }
