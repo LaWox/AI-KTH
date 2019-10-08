@@ -41,18 +41,12 @@ public class Main2 {
         for(int t = 1; t < delta[0].length; t++){
             for(int i = 0; i < delta.length; i++){
                 max = 0;
-                int count=0;
+
                 for(int j = 0; j < delta.length; j++){
                     deltaTemp = delta[j][t-1]*a[j][i]*b[i][eSeq[t]];
 
 
                         //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
-
-                    /*if(t==6){
-                        //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
-                        System.out.println(deltaTemp);
-                    } */
-
 
                     if(deltaTemp >= max){
                         delta[i][t] = deltaTemp;
@@ -60,18 +54,17 @@ public class Main2 {
                         max = deltaTemp;
 
 
-                        if(t==6){
-                            //System.out.println(delta[j][t-1] + " " + a[j][i] + " " + b[i][eSeq[t]] + " ---- " + deltaTemp);
-                            System.out.println("count "+count+" i "+i+" t "+t+" j "+j+" max "+max);
-
-                        }
-
-
-
                     }
-                    count++;
                 }
-                //System.out.println(delta[i][t] +" "+maxStates[i][t]);
+
+                if(t==8 || t==9)
+                {
+                System.out.print(delta[i][t]+": maxstates:"+maxStates[i][t]+": ");
+
+                }
+            }
+            if(t==8 || t==9) {
+                System.out.println();
             }
         }
     }
@@ -227,7 +220,7 @@ public class Main2 {
         for(int i: maxStates){
             System.out.print(i+" ");
         }
-        //System.out.println();
+        System.out.println();
 
     }
 }

@@ -57,37 +57,26 @@ public class Viterbi {
                     double v_prob = T[state].v_prob;
                     double p = emission[0][next_state] * tp[state][next_state];
 
-                    if(output==5){
-                        //System.out.println("p "+p+" v_prob "+v_prob);
-                    }
-
                     v_prob *= p;
 
-                    /*if(output==5){
-                        System.out.println("v_prob after multiplication: "+v_prob);
-                    } */
 
                     if (v_prob > valmax) {
                         if (v_path.length == observations.length) {
                             argmax = copyIntArray(v_path);
                         } else {
-
-                             /*if(output==5){
-                                System.out.println("next state "+next_state+" state: "+state);
-                            } */
-
                             argmax = copyIntArray(v_path, next_state);
                         }
                         valmax = v_prob;
 
-                        /*if(output==5){
-                            System.out.println(output+" valmax "+valmax);
-                        } */
 
                     }
                 }
                 U[next_state] = new TimeStepNode( argmax, valmax);
+                if(t==8)
+                System.out.print(valmax+": next_state:"+next_state+": ");
+
             }
+            System.out.println();
             T = U;
         }
         // apply sum/max to the final states:
