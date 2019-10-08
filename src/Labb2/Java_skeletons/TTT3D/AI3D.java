@@ -2,15 +2,17 @@ import java.util.*;
 import java.lang.Math;
 
 public class AI3D{
-    public static int depth = 0;
+    public static int depth = 1;
 
     // return the "best" next gameState
     public static GameState getBestMove(Vector<GameState> states){
         int index = 0;
         double max = 0;
         double v = 0;
+
         // Array to store points in
         int[][] points = new int[states.get(0).BOARD_SIZE*2][states.get(0).BOARD_SIZE*2+2];
+
         // find state with max value and save its index
         for(int i = 0; i < states.size(); i++){
             v = minMaxPruning(states.get(i), depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, points);
@@ -44,7 +46,7 @@ public class AI3D{
                 alpha = Math.max(alpha, v);
 
                 // if we find win
-                if(v == 100000){
+                if(v == 10000){
                     return 1000000;
                 }
                 if(beta <= alpha){
@@ -90,8 +92,9 @@ public class AI3D{
                         points[layer][row] *= scaling;
                         points[layer][state.BOARD_SIZE + col] *= scaling;
                         points[col + state.BOARD_SIZE][row] *= scaling;
-                        points[col + state.BOARD_SIZE][layer] *= scaling;
+                        points[col + state.BOARD_SIZE][state.BOARD_SIZE + layer] *= scaling;
 
+                        /**
                         // if it's in the first diagonal
                         if(counter%state.BOARD_SIZE+1 == 0){
                             points[layer][state.BOARD_SIZE*2] *= scaling;
@@ -101,27 +104,32 @@ public class AI3D{
                         if(counter%state.BOARD_SIZE-1 == 0 && row+col != 0){
                             points[layer][state.BOARD_SIZE*2 + 1] *= scaling;
                         }
+                         */
                     }
                     // if an enemy player is encoutered null the value of the row/col
                     else if(player == 2){
                         points[layer][row] = 0;
                         points[layer][state.BOARD_SIZE + col] = 0;
+                        points[col + state.BOARD_SIZE][row] *= 0;
+                        points[col + state.BOARD_SIZE][state.BOARD_SIZE + layer] *= 0;
 
+                        /**
                         if(counter%state.BOARD_SIZE+1 == 0){
                             points[layer][state.BOARD_SIZE*2] = 0;
                         }
                         if(counter%state.BOARD_SIZE-1 == 0){
                             points[layer][state.BOARD_SIZE*2 + 1] = 0;
                         }
+                         */
                     }
                     counter++;
                 }
             }
 
-            // if a latyer contains a win
+            // if a layer contains a win
+            counter = 0;
             for(int i: points[layer]){
                 if(i == 10000){
-                    //System.err.print(i + " " + " layer " + layer);
                     return 1000000;
                 }
                 else if(i > 1){
