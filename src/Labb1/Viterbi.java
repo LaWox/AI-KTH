@@ -96,10 +96,9 @@ public class Viterbi {
 
                         }
                         valmax = v_prob;
-
-
                     }
                 }
+
                 U[next_state] = new TimeStepNode( argmax, valmax);
                 delta[next_state][output]=valmax;
                 stateMatrix[next_state][output]=maxstate;
@@ -131,6 +130,17 @@ public class Viterbi {
                 valmax = v_prob;
             }
         }
+
+        for (int state = 0; state < hiddenStates.length; state++) {
+            int[] v_path = copyIntArray(T[state].v_path);
+            for(int s: v_path) {
+                System.out.print(s+" ");
+            }
+            System.out.println();
+            }
+
+
+
 
         return argmax;
     }
@@ -257,21 +267,16 @@ public class Viterbi {
         argmax=v.forwardViterbi(emissions, statesList, piMatrix[0], AMatrix, BMatrix);
 
 
-        //System.out.print("Viterbi path: ");
+        System.out.print("Viterbi path: ");
         for (int i = 0; i < argmax.length; i++) {
             System.out.print(statesList[argmax[i]] + " ");
         }
         System.out.println();
 
-        printMatrix(stateMatrix);
+        //printMatrix(stateMatrix);
 
-        int [] maxStates = new int[delta[0].length];
-        maxStates = getPath(delta, stateMatrix);
 
-        for(int i: maxStates){
-            System.out.print(i+" ");
-        }
-        System.out.println();
+        //System.out.println();
 
 
     }
