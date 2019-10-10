@@ -62,7 +62,7 @@ public class Main3 {
             gammaM[i][T-1] = alpha[i][T-1];
         }
     }
-        // gamma function
+    // gamma function
     static double[][] gamma(double diGamma[][][], double alpha[][]){
         int T = diGamma[0][0].length;
         double [][] gamma = new double[diGamma.length][T];
@@ -157,8 +157,6 @@ public class Main3 {
                 alpha[i][t] *= observation[0][i];
                 c[t] += alpha[i][t];
             }
-            //System.out.println(c[t]);
-            //System.out.println(1/c[t]);
             c[t] = 1/c[t];
             for (int k = 0; k < A.length; k++) {
                 alpha[k][t] *= c[t];
@@ -198,7 +196,6 @@ public class Main3 {
         estA(diGamma, gamma, A);
         estB(diGamma, gamma, B, emiSeq);
     }
-
 
     public static void main(String[] args){
         String[] aMatrixStr;
@@ -253,7 +250,7 @@ public class Main3 {
 
         double logPCurrent = 0;
         double logPTemp = 0;
-        int maxIterations = 100;
+        int maxIterations = 100000000;
         int iters = 0;
 
         // alpha, beta, gamma and di-gamma
@@ -269,17 +266,16 @@ public class Main3 {
         logPCurrent=logProb(c);
 
 
+        // Iterate until it converges
         while(iters < maxIterations && logPCurrent > logPTemp){
-            //printMatrix(AMatrix);
-
             estimateLambda(AMatrix, BMatrix, piMatrix, emiSeq, alphaM, betaM, c, diGammaM, gamma);
-
             logPTemp=logPCurrent;
             logPCurrent = logProb(c);
-            //System.out.println("curr :" + logPCurrent + " prev: " + logPTemp);
             iters++;
         }
 
+        System.out.println(iters);
+        // Print the A and B matrixes
         System.out.print(AMatrix.length + " " + AMatrix[0].length + " ");
         for(int i = 0; i < AMatrix.length; i++){
             for(int j = 0; j < AMatrix[0].length; j++){
