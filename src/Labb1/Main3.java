@@ -237,7 +237,8 @@ public class Main3 {
             //System.out.println(pi[i]);
         }
 
-        for(int i=0; i<emiStr.length-1; i++){
+        // loop through len if emySeq
+        for(int i=0; i<Integer.parseInt(emiStr[0]); i++){
             emiSeq[i]=Integer.parseInt(emiStr[i+1]);
             //System.out.println(emiSeq[i]);
         }
