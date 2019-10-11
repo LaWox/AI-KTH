@@ -290,5 +290,9 @@ public class Main3 {
                 System.out.print(BMatrix[i][j] + " ");
             }
         }
+        System.out.println();
+        for(int i = 0; i < piMatrix[0].length; i++){
+            System.out.print(piMatrix[0][i] + " ");
+        }
     }
 }
