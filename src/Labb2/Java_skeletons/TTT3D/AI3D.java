@@ -14,6 +14,7 @@ public class AI3D{
         int round = (int) Math.floor((64 - states.size())/2) + 1;
         //System.err.println(round);
 
+        // Make a "random move first round"
         if(round == 1){
             return states.get((int) Math.floor(states.size())/2 - 5);
         }
@@ -53,6 +54,7 @@ public class AI3D{
             for(GameState s: nextStates){
                 v = Math.max(v, minMaxPruning(s,depth-1, alpha, beta, points, enemyPoints, round));
                 alpha = Math.max(alpha, v);
+
                 // if we find win
                 if(v == 1000000){
                     System.err.println("found opt");
